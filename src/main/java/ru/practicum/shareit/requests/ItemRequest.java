@@ -1,7 +1,7 @@
 package ru.practicum.shareit.requests;
 
 import lombok.Data;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;

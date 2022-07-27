@@ -1,10 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.requests.ItemRequest;
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.model.User;
+
 @Data
-public class ItemDto {
+@Builder
+public class ItemDtoService {
     private Long id;
     private String name;
     private String description;
@@ -13,6 +16,8 @@ public class ItemDto {
     private ItemRequest request;
     private Long requestId;
 
-    public ItemDto(String name, String description, Boolean available, Long requestId) {
+    public Boolean isAvailable() {
+        return available;
     }
+
 }
