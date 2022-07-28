@@ -18,7 +18,7 @@ public class ItemDtoController {
     private String description;
     @NotNull(message = "произошла ошибка. Отсутствует статус доступности вещи для аренды")
     private Boolean available;
-    private User owner;
+    private Long owner;
     private ItemRequest request;
     private Long requestId;
 

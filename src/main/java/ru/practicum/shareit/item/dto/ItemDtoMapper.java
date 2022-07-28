@@ -3,13 +3,13 @@ package ru.practicum.shareit.item.dto;
 import ru.practicum.shareit.item.model.Item;
 
 public class ItemDtoMapper {
-    //TODO Реализовать сеарилизацию всех параметров объектов ItemDtoController, ItemDtoService, Item
     public static ItemDtoService itemDtoControllerToItemDtoService(ItemDtoController itemDtoController) {
         return ItemDtoService.builder()
                 .id(itemDtoController.getId())
                 .name(itemDtoController.getName())
                 .description(itemDtoController.getDescription())
                 .available(itemDtoController.getAvailable())
+                .owner(itemDtoController.getOwner())
                 .build();
     }
 
@@ -19,6 +19,7 @@ public class ItemDtoMapper {
                 .name(itemDtoService.getName())
                 .description(itemDtoService.getDescription())
                 .available(itemDtoService.getAvailable())
+                .owner(itemDtoService.getOwner())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class ItemDtoMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
+                .owner(item.getOwner())
                 .build();
     }
 

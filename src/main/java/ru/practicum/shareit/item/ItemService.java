@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDtoController;
 import ru.practicum.shareit.item.dto.ItemDtoService;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 
+import java.util.Collections;
 import java.util.List;
 
 /*Для каждого из данных сценариев создайте соответственный метод в контроллере.
@@ -20,12 +20,12 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    public ItemDtoController getItemById(Long userId, Long itemId) {
+    public ItemDtoService getItemById(Long userId, Long itemId) {
         return itemRepository.getItemByIdFromStorage(userId, itemId);
     }
 
-    public List<Item> getAllItems() {
-        return itemRepository.getAllItemsFromStorage();
+    public List<ItemDtoService> getAllItems(Long userId) {
+        return itemRepository.getAllItemsFromStorage(userId);
     }
 
     public ItemDtoService createItem(Long userId, ItemDtoService itemDtoService) {
@@ -35,12 +35,17 @@ public class ItemService {
         return itemRepository.createItemInStorage(userId, itemDtoService);
     }
 
-    public ItemDtoController updateItem(Long userId, Long itemId, ItemDtoController itemDto) {
-        return itemRepository.updateItemInStorage(userId, itemId, itemDto);
+    public ItemDtoService updateItem(Long userId, Long itemId, ItemDtoService itemDtoService) {
+        if (!userRepository.userIsContainsById(userId)) {
+            throw new UserNotFoundException("Пользователь с переданным id не найден");
+        }
+        return itemRepository.updateItemInStorage(userId, itemId, itemDtoService);
     }
 
-    public List<ItemDtoController> findItems(String text) {
-        return itemRepository.findItemsFromStorage(text);
+    public List<ItemDtoService> findItems(String text) {
+        if(text.isBlank()){return Collections.emptyList();}
+        String[] words = text.split(" ");
+        return itemRepository.findItemsFromStorage(words);
     }
 
 }

@@ -36,6 +36,13 @@ public class ErrorHandler {
                         e.getFieldError().getDefaultMessage()));
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleValidationOwnerException(final OwnerVerificationException e) {
+        logMakeNote(e);
+        return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
+    }
+
 
     private void logMakeNote(Exception e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());

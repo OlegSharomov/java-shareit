@@ -12,7 +12,7 @@ public class ItemDtoService {
     private String name;
     private String description;
     private Boolean available;
-    private User owner;
+    private Long owner;
     private ItemRequest request;
     private Long requestId;
 

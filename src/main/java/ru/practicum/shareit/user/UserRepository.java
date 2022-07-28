@@ -42,21 +42,20 @@ public class UserRepository {
     }
 
     public UserDtoService updateUserInStorage(Long userId, UserDtoService userDtoService) {
-        User user = UserDtoMapper.userDtoServiceToUser(userDtoService);
-        User userFromStorage = users.get(userId);
-        if (user.getName() != null) {
-            userFromStorage.setName(user.getName());
+        User userFromRepository = users.get(userId);
+        if (userDtoService.getName() != null && !userDtoService.getName().equals(userFromRepository.getName())) {
+            userFromRepository.setName(userDtoService.getName());
         }
-        if (user.getEmail() != null) {
+        if (userDtoService.getEmail() != null && !userDtoService.getEmail().equals(userFromRepository.getEmail())) {
             boolean isContainsEmail = users.values().stream()
-                    .filter(x -> !x.equals(userFromStorage))
-                    .anyMatch(x -> x.getEmail().equals(user.getEmail()));
+                    .filter(x -> !x.equals(userFromRepository))
+                    .anyMatch(x -> x.getEmail().equals(userDtoService.getEmail()));
             if (isContainsEmail) {
                 throw new DuplicateException("Пользователь с таким email уже существует в хранилище");
             }
-            userFromStorage.setEmail(user.getEmail());
+            userFromRepository.setEmail(userDtoService.getEmail());
         }
-        return UserDtoMapper.userToUserDtoService(userFromStorage);
+        return UserDtoMapper.userToUserDtoService(userFromRepository);
     }
 
     public void deleteUserByIdInStorage(Long userId) {
