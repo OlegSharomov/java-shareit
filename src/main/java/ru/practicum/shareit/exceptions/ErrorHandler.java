@@ -26,13 +26,19 @@ public class ErrorHandler {
         logMakeNote(e);
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleItemNotFoundException(final ItemNotFoundException e) {
+        logMakeNote(e);
+        return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         logMakeNote(e);
         return new ErrorResponse(
-                String.format("При обработке поля %s %s", Objects.requireNonNull(e.getFieldError()).getField(),
+                String.format("При обработке поля %s произошла ошибка. %s", Objects.requireNonNull(e.getFieldError()).getField(),
                         e.getFieldError().getDefaultMessage()));
     }
 

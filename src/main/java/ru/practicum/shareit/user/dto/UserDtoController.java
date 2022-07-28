@@ -10,10 +10,10 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class UserDtoController {
-    private  Long id;
-    @NotBlank(message = "произошла ошибка. Имя пользователя отсутствует")
-    private  String name;
-    @NotNull(message = "произошла ошибка. Email пользователя отсутствует")
-    @Email(message = "произошла ошибка. Email не проходит проверку")
-    private  String email;   // два пользователя не могут иметь одинаковый адрес электронной почты
+    private Long id;
+    @NotBlank(message = "Имя пользователя отсутствует")
+    private String name;
+    @NotNull(message = "Email пользователя отсутствует")
+    @Email(message = "Email не проходит проверку")
+    private String email;
 }

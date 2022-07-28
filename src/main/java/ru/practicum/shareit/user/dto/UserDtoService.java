@@ -10,10 +10,10 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class UserDtoService {
-    private  Long id;
+    private Long id;
     @NotBlank
-    private  String name;
+    private String name;
     @NotNull
     @Email
-    private  String email;   // два пользователя не могут иметь одинаковый адрес электронной почты
+    private String email;
 }

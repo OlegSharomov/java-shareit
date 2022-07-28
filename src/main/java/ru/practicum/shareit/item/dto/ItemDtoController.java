@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.dto;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.requests.ItemRequest;
-import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,11 +11,11 @@ import javax.validation.constraints.NotNull;
 @Builder
 public class ItemDtoController {
     private Long id;
-    @NotBlank(message = "произошла ошибка. Название вещи не должно быть пустым")
+    @NotBlank(message = "Название вещи не должно быть пустым")
     private String name;
-    @NotNull(message = "произошла ошибка. Отсутствует описание вещи")
+    @NotNull(message = "Отсутствует описание вещи")
     private String description;
-    @NotNull(message = "произошла ошибка. Отсутствует статус доступности вещи для аренды")
+    @NotNull(message = "Отсутствует статус доступности вещи для аренды")
     private Boolean available;
     private Long owner;
     private ItemRequest request;
