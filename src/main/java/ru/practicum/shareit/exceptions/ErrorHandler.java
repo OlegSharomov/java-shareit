@@ -26,6 +26,7 @@ public class ErrorHandler {
         logMakeNote(e);
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleItemNotFoundException(final ItemNotFoundException e) {

@@ -2,15 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDtoController;
 import ru.practicum.shareit.item.dto.ItemDtoControllerForAnswer;
 import ru.practicum.shareit.item.dto.ItemDtoMapper;
@@ -58,8 +50,8 @@ class ItemController {
     public ItemDtoControllerForAnswer updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                  @PathVariable Long itemId,
                                                  @RequestBody ItemDtoController itemDtoController) {
-        log.info("Получен запрос PATCH/items от пользователя id = {} для изменения вещи id = {} с переданным телом: {}"
-                , userId, itemId, itemDtoController);
+        log.info("Получен запрос PATCH/items от пользователя id = {} для изменения вещи id = {} с переданным телом: {}",
+                userId, itemId, itemDtoController);
         ItemDtoService itemDtoService = ItemDtoMapper.itemDtoControllerToItemDtoService(itemDtoController);
         ItemDtoService itemDtoServiceForAnswer = service.updateItem(userId, itemId, itemDtoService);
         return ItemDtoMapper.itemDtoServiceToItemDtoControllerForAnswer(itemDtoServiceForAnswer);
