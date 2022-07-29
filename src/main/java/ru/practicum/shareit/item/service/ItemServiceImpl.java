@@ -3,7 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
-import ru.practicum.shareit.item.dto.ItemDtoService;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -17,37 +17,37 @@ class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
 
     @Override
-    public ItemDtoService getItemById(Long userId, Long itemId) {
+    public Item getItemById(Long userId, Long itemId) {
         return itemRepository.getItemByIdFromStorage(userId, itemId);
     }
 
     @Override
-    public List<ItemDtoService> getAllItemsOfUser(Long userId) {
+    public List<Item> getAllItemsOfUser(Long userId) {
         return itemRepository.getAllItemsOfUserFromStorage(userId);
     }
 
     @Override
-    public ItemDtoService createItem(Long userId, ItemDtoService itemDtoService) {
+    public Item createItem(Long userId, Item item) {
         if (!userRepository.isUserExistsById(userId)) {
             throw new UserNotFoundException("Пользователь с переданным id не найден");
         }
-        return itemRepository.createItemInStorage(userId, itemDtoService);
+        return itemRepository.createItemInStorage(userId, item);
     }
 
     @Override
-    public ItemDtoService updateItem(Long userId, Long itemId, ItemDtoService itemDtoService) {
+    public Item updateItem(Long userId, Long itemId, Item item) {
         if (!userRepository.isUserExistsById(userId)) {
             throw new UserNotFoundException("Пользователь с переданным id не найден");
         }
-        return itemRepository.updateItemInStorage(userId, itemId, itemDtoService);
+        return itemRepository.updateItemInStorage(userId, itemId, item);
     }
 
     @Override
-    public List<ItemDtoService> searchForItemsByQueryText(String text) {
+    public List<Item> searchForItemsByQueryText(String text) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        String[] words = text.split(" ");
+        String[] words = text.split("%20");
         return itemRepository.searchForItemsByQueryTextFromStorage(words);
     }
 }

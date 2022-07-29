@@ -3,67 +3,64 @@ package ru.practicum.shareit.user.repository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.DuplicateException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
-import ru.practicum.shareit.user.dto.UserDtoMapper;
-import ru.practicum.shareit.user.dto.UserDtoService;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Repository
-class UserRepositoryImpl implements UserRepository {
+class InMemoryUserRepository implements UserRepository {
     private final Map<Long, User> users = new HashMap<>();
-    private static Long id = 0L;
+    private Long id = 0L;
 
-    private static Long getNewUserId() {
+    private Long getNewUserId() {
         return ++id;
     }
 
     @Override
-    public List<UserDtoService> getAllUsersFromStorage() {
-        return users.values().stream().map(UserDtoMapper::userToUserDtoService).collect(Collectors.toList());
+    public List<User> getAllUsersFromStorage() {
+        return new ArrayList<>(users.values());
     }
 
     @Override
-    public UserDtoService getUserByIdFromStorage(Long userId) {
+    public User getUserByIdFromStorage(Long userId) {
         if (!users.containsKey(userId)) {
             throw new UserNotFoundException(
                     String.format("Пользователь с переданным id = %d отсутствует в хранилище", userId));
         }
-        return UserDtoMapper.userToUserDtoService(users.get(userId));
+        return users.get(userId);
     }
 
     @Override
-    public UserDtoService createUserInStorage(UserDtoService userDtoService) {
+    public User createUserInStorage(User user) {
         boolean isEmailAlreadyExistsInRepository = users.values().stream()
-                .anyMatch(x -> x.getEmail().equals(userDtoService.getEmail()));
+                .anyMatch(x -> x.getEmail().equals(user.getEmail()));
         if (isEmailAlreadyExistsInRepository) {
             throw new DuplicateException("Пользователь с таким email уже существует в хранилище");
         }
-        userDtoService.setId(getNewUserId());
-        User user = UserDtoMapper.userDtoServiceToUser(userDtoService);
+        user.setId(getNewUserId());
         users.put(user.getId(), user);
-        return UserDtoMapper.userToUserDtoService(user);
+        return user;
     }
 
     @Override
-    public UserDtoService updateUserInStorage(Long userId, UserDtoService userDtoService) {
+    public User updateUserInStorage(Long userId, User user) {
         User userFromRepository = users.get(userId);
-        if (userDtoService.getName() != null && !userDtoService.getName().equals(userFromRepository.getName())) {
-            userFromRepository.setName(userDtoService.getName());
+        if (user.getName() != null && !user.getName().equals(userFromRepository.getName())) {
+            userFromRepository.setName(user.getName());
         }
-        if (userDtoService.getEmail() != null && !userDtoService.getEmail().equals(userFromRepository.getEmail())) {
+        if (user.getEmail() != null && !user.getEmail().equals(userFromRepository.getEmail())) {
             boolean isEmailAlreadyExistsInRepository = users.values().stream()
                     .filter(x -> !x.equals(userFromRepository))
-                    .anyMatch(x -> x.getEmail().equals(userDtoService.getEmail()));
+                    .anyMatch(x -> x.getEmail().equals(user.getEmail()));
             if (isEmailAlreadyExistsInRepository) {
                 throw new DuplicateException("Пользователь с таким email уже существует в хранилище");
             }
-            userFromRepository.setEmail(userDtoService.getEmail());
+            userFromRepository.setEmail(user.getEmail());
         }
-        return UserDtoMapper.userToUserDtoService(userFromRepository);
+        return userFromRepository;
     }
 
     @Override

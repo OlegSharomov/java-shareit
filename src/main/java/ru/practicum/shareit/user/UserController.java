@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.user.dto.UserDtoController;
-import ru.practicum.shareit.user.dto.UserDtoMapper;
-import ru.practicum.shareit.user.dto.UserDtoService;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserDtoForAnswer;
+import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
@@ -25,35 +26,36 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 class UserController {
     private final UserService service;
+    private final UserMapper userMapper;
 
     @GetMapping
-    public List<UserDtoController> getAllUsers() {
+    public List<UserDtoForAnswer> getAllUsers() {
         log.info("Получен запрос GET/users");
-        List<UserDtoService> users = service.getAllUsers();
-        return users.stream().map(UserDtoMapper::userDtoServiceToUserDtoController).collect(Collectors.toList());
+        List<User> users = service.getAllUsers();
+        return users.stream().map(userMapper::toUserDtoForAnswer).collect(Collectors.toList());
     }
 
     @GetMapping("/{userId}")
-    public UserDtoController getUserById(@PathVariable Long userId) {
+    public UserDtoForAnswer getUserById(@PathVariable Long userId) {
         log.info("Получен запрос GET/users/{}", userId);
-        UserDtoService userDtoService = service.getUserById(userId);
-        return UserDtoMapper.userDtoServiceToUserDtoController(userDtoService);
+        User user = service.getUserById(userId);
+        return userMapper.toUserDtoForAnswer(user);
     }
 
     @PostMapping
-    public UserDtoController createUser(@Valid @RequestBody UserDtoController userDtoController) {
-        log.info("Получен запрос POST/users с переданным телом: {}", userDtoController);
-        UserDtoService userDtoService = UserDtoMapper.userDtoControllerToUserDtoService(userDtoController);
-        UserDtoService userDtoServiceForAnswer = service.createUser(userDtoService);
-        return UserDtoMapper.userDtoServiceToUserDtoController(userDtoServiceForAnswer);
+    public UserDtoForAnswer createUser(@Valid @RequestBody UserDto userDto) {
+        log.info("Получен запрос POST/users с переданным телом: {}", userDto);
+        User user = userMapper.toUser(userDto);
+        User userForAnswer = service.createUser(user);
+        return userMapper.toUserDtoForAnswer(userForAnswer);
     }
 
     @PatchMapping("/{userId}")
-    public UserDtoController updateUser(@PathVariable Long userId, @RequestBody UserDtoController userDtoController) {
-        log.info("Получен запрос PATCH/users/{} с переданным телом: {}", userId, userDtoController);
-        UserDtoService userDtoService = UserDtoMapper.userDtoControllerToUserDtoService(userDtoController);
-        UserDtoService userDtoServiceForAnswer = service.updateUser(userId, userDtoService);
-        return UserDtoMapper.userDtoServiceToUserDtoController(userDtoServiceForAnswer);
+    public UserDtoForAnswer updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
+        log.info("Получен запрос PATCH/users/{} с переданным телом: {}", userId, userDto);
+        User user = userMapper.toUser(userDto);
+        User userForAnswer = service.updateUser(userId, user);
+        return userMapper.toUserDtoForAnswer(userForAnswer);
     }
 
     @DeleteMapping("/{userId}")

@@ -7,15 +7,16 @@ import ru.practicum.shareit.requests.ItemRequest;
 @Data
 @Builder
 public class Item {
-    private final Long id;
+    private Long id;
     private String name;
     private String description;
-    private Boolean available;  // — статус о том, доступна или нет вещь для аренды. Проставляется только владельцем!
+    private Boolean available;
     private Long owner;
-    private ItemRequest request;    /* — если вещь была создана по запросу другого пользователя, то в этом
-    ItemRequest или Long?                   поле будет храниться ссылка на соответствующий запрос */
+    private ItemRequest request;
+    private Long requestId;
 
     public Boolean isAvailable() {
         return available;
     }
+
 }

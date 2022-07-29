@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-public class UserDtoController {
+public class UserDto {
     private Long id;
     @NotBlank(message = "Имя пользователя отсутствует")
     private String name;
