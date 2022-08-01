@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.repository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.DuplicateException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
@@ -47,11 +48,23 @@ class InMemoryUserRepository implements UserRepository {
 
     @Override
     public User updateUserInStorage(Long userId, User user) {
+        if (!users.containsKey(userId)) {
+            throw new UserNotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
+        }
         User userFromRepository = users.get(userId);
+        if (user.getId() != null && !user.getId().equals(userFromRepository.getId())) {
+            throw new ValidationException("Id пользователя изменить нельзя");
+        }
         if (user.getName() != null && !user.getName().equals(userFromRepository.getName())) {
+            if (user.getName().isBlank()) {
+                throw new ValidationException("Имя пользователя не может быть пустым");
+            }
             userFromRepository.setName(user.getName());
         }
         if (user.getEmail() != null && !user.getEmail().equals(userFromRepository.getEmail())) {
+            if (user.getEmail().isBlank()) {
+                throw new ValidationException("Email пользователя не может быть пустым");
+            }
             boolean isEmailAlreadyExistsInRepository = users.values().stream()
                     .filter(x -> !x.equals(userFromRepository))
                     .anyMatch(x -> x.getEmail().equals(user.getEmail()));

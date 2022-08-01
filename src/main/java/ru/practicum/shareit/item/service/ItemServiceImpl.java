@@ -47,7 +47,7 @@ class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        String[] words = text.split("%20");
+        String[] words = text.split(" ");
         return itemRepository.searchForItemsByQueryTextFromStorage(words);
     }
 }

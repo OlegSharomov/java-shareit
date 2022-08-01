@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.repository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.OwnerVerificationException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Arrays;
@@ -47,12 +48,21 @@ class InMemoryItemRepository implements ItemRepository {
 
     @Override
     public Item updateItemInStorage(Long userId, Long itemId, Item item) {
+        if (!items.containsKey(itemId)) {
+            throw new ItemNotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
+        }
         Item itemFromRepository = items.get(itemId);
+        if (item.getId() != null && !item.getId().equals(itemFromRepository.getId())) {
+            throw new ValidationException("Id вещи изменить нельзя");
+        }
         if (!itemFromRepository.getOwner().equals(userId)) {
             throw new OwnerVerificationException("Доступ к редактированию ограничен. " +
                     "Редактировать вещь может только её владелец.");
         }
         if (item.getName() != null && !item.getName().equals(itemFromRepository.getName())) {
+            if (item.getName().isBlank()) {
+                throw new ValidationException("Имя пользователя не может быть пустым");
+            }
             itemFromRepository.setName(item.getName());
         }
         if (item.getDescription() != null

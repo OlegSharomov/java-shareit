@@ -66,7 +66,6 @@ class ItemController {
     @GetMapping("/search")
     public List<ItemDtoAnswer> searchForItemsByQueryText(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                          @RequestParam String text) {
-        System.out.println(text);
         log.info("Получен запрос GET/items/search от пользователя id = {} с текстом запроса: {}", userId, text);
         return service.searchForItemsByQueryText(text).stream()
                 .map(itemMapper::toItemDtoAnswer)

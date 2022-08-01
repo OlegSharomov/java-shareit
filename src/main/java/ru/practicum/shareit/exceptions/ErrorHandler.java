@@ -50,6 +50,12 @@ public class ErrorHandler {
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(final ValidationException e) {
+        logMakeNote(e);
+        return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
+    }
 
     private void logMakeNote(Exception e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
