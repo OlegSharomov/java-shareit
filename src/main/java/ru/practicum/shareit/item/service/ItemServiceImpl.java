@@ -28,7 +28,8 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public Item createItem(Long userId, Item item) {
-        if (!userRepository.isUserExistsById(userId)) {
+//        if (!userRepository.isUserExistsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("Пользователь с переданным id не найден");
         }
         return itemRepository.createItemInStorage(userId, item);
@@ -36,7 +37,8 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateItem(Long userId, Long itemId, Item item) {
-        if (!userRepository.isUserExistsById(userId)) {
+//        if (!userRepository.isUserExistsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException("Пользователь с переданным id не найден");
         }
         return itemRepository.updateItemInStorage(userId, itemId, item);

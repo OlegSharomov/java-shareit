@@ -1,18 +1,60 @@
 package ru.practicum.shareit.requests;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
-import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import java.util.Objects;
 
-@Data
+@AllArgsConstructor
+@Builder
+@Getter
+@Setter
+@ToString
+@Entity
+@Table(name = "requests", schema = "public")
 public class ItemRequest {
-    @Positive
-    private final Long id;
-    @NotBlank
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+    @Column(name = "description")
     private String description;
+    @OneToOne
+    @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;     // — пользователь, создавший запрос
-    private final LocalDateTime created;    // — дата и время создания запроса
+//    private  LocalDateTime created;    // — дата и время создания запроса
+
+    public ItemRequest() {
+    }
+
+    public ItemRequest(String description, User requestor) {
+        this.description = description;
+        this.requestor = requestor;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ItemRequest that = (ItemRequest) o;
+        return Objects.equals(id, that.id) && Objects.equals(description, that.description) && Objects.equals(requestor, that.requestor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, description, requestor);
+    }
 }

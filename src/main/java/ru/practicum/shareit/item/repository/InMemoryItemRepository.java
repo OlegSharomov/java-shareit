@@ -41,7 +41,7 @@ class InMemoryItemRepository implements ItemRepository {
     @Override
     public Item createItemInStorage(Long userId, Item item) {
         item.setId(getNewItemId());
-        item.setOwner(userId);
+//        item.setOwner(userId);
         items.put(item.getId(), item);
         return item;
     }

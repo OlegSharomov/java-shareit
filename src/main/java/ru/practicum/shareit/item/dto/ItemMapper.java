@@ -11,7 +11,7 @@ public class ItemMapper {
                 .name(itemDtoController.getName())
                 .description(itemDtoController.getDescription())
                 .available(itemDtoController.getAvailable())
-                .owner(itemDtoController.getOwner())
+//                .owner(itemDtoController.getOwner())
                 .build();
     }
 
