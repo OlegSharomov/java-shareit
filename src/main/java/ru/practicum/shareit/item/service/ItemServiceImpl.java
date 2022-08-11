@@ -46,7 +46,10 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchForItemsByQueryText(String text) {
-        if (text.isBlank()) {
+        if (text
+//                .isBlank()
+                .trim().isEmpty()
+        ) {
             return Collections.emptyList();
         }
         String[] words = text.split(" ");

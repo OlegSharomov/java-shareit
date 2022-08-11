@@ -60,7 +60,10 @@ class InMemoryItemRepository implements ItemRepository {
                     "Редактировать вещь может только её владелец.");
         }
         if (item.getName() != null && !item.getName().equals(itemFromRepository.getName())) {
-            if (item.getName().isBlank()) {
+            if (item.getName()
+//                    .isBlank()
+                    .trim().isEmpty()
+            ) {
                 throw new ValidationException("Имя пользователя не может быть пустым");
             }
             itemFromRepository.setName(item.getName());

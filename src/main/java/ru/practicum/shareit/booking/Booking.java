@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,8 +18,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.util.Objects;
 
-
+@AllArgsConstructor
 @Builder
 @Getter
 @Setter
@@ -28,7 +30,7 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private final Long id;
+    private Long id;
     @Column(name = "start_date")
     private LocalDate start;
     @Column(name = "end_date")
@@ -43,4 +45,20 @@ public class Booking {
     @Column(name = "status")
     private BookingStatus status;   /* - статус бронирования (ожидает одобрения, подтверждено владельцем,
                                      отклонено владельцем или отменено создателем) */
+
+    public Booking() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Booking booking = (Booking) o;
+        return Objects.equals(id, booking.id) && Objects.equals(start, booking.start) && Objects.equals(end, booking.end) && Objects.equals(item, booking.item) && Objects.equals(booker, booking.booker) && status == booking.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, start, end, item, booker, status);
+    }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,6 +58,15 @@ public class ErrorHandler {
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
+        logMakeNote(e);
+        return new ErrorResponse("Произошла ошибка. Попытка создать объект с уникальным элементом, " +
+                "который уже существует в Базе Данных");
+    }
+
+// ConstraintViolationException
     private void logMakeNote(Exception e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
     }
