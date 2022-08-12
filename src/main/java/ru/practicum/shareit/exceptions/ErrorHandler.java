@@ -40,8 +40,8 @@ public class ErrorHandler {
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         logMakeNote(e);
         return new ErrorResponse(
-                String.format("При обработке поля %s произошла ошибка. %s", Objects.requireNonNull(e.getFieldError()).getField(),
-                        e.getFieldError().getDefaultMessage()));
+                String.format("При обработке поля %s произошла ошибка. %s",
+                        Objects.requireNonNull(e.getFieldError()).getField(), e.getFieldError().getDefaultMessage()));
     }
 
     @ExceptionHandler

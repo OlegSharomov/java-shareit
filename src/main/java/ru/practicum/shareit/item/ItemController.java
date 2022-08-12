@@ -58,8 +58,7 @@ class ItemController {
                                     @RequestBody ItemDto itemDto) {
         log.info("Получен запрос PATCH/items от пользователя id = {} для изменения вещи id = {} с переданным телом: {}",
                 userId, itemId, itemDto);
-        Item item = itemMapper.toItem(itemDto);
-        Item itemForAnswer = service.updateItem(userId, itemId, item);
+        Item itemForAnswer = service.updateItem(userId, itemId, itemDto);
         return itemMapper.toItemDtoAnswer(itemForAnswer);
     }
 

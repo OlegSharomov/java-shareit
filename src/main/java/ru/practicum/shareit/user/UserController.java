@@ -53,7 +53,6 @@ class UserController {
     @PatchMapping("/{userId}")
     public UserDtoForAnswer updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
         log.info("Получен запрос PATCH/users/{} с переданным телом: {}", userId, userDto);
-//        User user = userMapper.toUser(userDto);
         User userForAnswer = service.updateUser(userId, userDto);
         return userMapper.toUserDtoForAnswer(userForAnswer);
     }
