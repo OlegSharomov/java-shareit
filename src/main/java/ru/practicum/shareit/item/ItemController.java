@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoAnswer;
+import ru.practicum.shareit.item.dto.ItemDtoAnswerFull;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -30,10 +31,10 @@ class ItemController {
     private final ItemMapper itemMapper;
 
     @GetMapping("/{itemId}")
-    public ItemDtoAnswer getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                     @PathVariable Long itemId) {
+    public ItemDtoAnswerFull getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                         @PathVariable Long itemId) {
         log.info("Получен запрос GET/items/{} от пользователя id = {}", itemId, userId);
-        return itemMapper.toItemDtoAnswer(service.getItemById(userId, itemId));
+        return service.getAndConvertedByAnswer(userId, itemId);
     }
 
     @GetMapping

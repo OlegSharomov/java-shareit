@@ -3,9 +3,9 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exceptions.UserNotFoundException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapperForPatch;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -17,7 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserMapperForPatch userMapperForPatch;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -32,7 +32,7 @@ class UserServiceImpl implements UserService {
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else {
-            throw new UserNotFoundException(
+            throw new NotFoundException(
                     String.format("Пользователь с переданным id = %d отсутствует в хранилище", userId));
         }
     }
@@ -49,10 +49,10 @@ class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(userId);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            userMapperForPatch.updateUserFromDto(userDto, user);
+            userMapper.updateUserFromDto(userDto, user);
             return userRepository.save(user);
         } else {
-            throw new UserNotFoundException("Пользователь с переданным id не найден");
+            throw new NotFoundException("Пользователь с переданным id не найден");
         }
     }
 
@@ -64,7 +64,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean isUserExists(Long userId){
+    public boolean isUserExists(Long userId) {
         return userRepository.existsById(userId);
     }
 }

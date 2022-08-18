@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,14 +24,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        logMakeNote(e);
-        return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final ItemNotFoundException e) {
+    public ErrorResponse handleItemNotFoundException(final NotFoundException e) {
         logMakeNote(e);
         return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
     }
@@ -66,7 +60,19 @@ public class ErrorHandler {
                 "который уже существует в Базе Данных");
     }
 
-// ConstraintViolationException
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleUnsupportedStatus(final UnsupportedStatusException e) {
+        logMakeNote(e);
+        return new ErrorResponse(e.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e){
+        logMakeNote(e);
+        return new ErrorResponse(e.getMessage());
+    }
+
     private void logMakeNote(Exception e) {
         log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
     }
