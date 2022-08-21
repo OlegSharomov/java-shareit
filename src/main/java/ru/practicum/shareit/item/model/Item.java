@@ -21,10 +21,10 @@ import java.util.Objects;
 
 @AllArgsConstructor
 @Builder
-@Entity
 @Getter
 @Setter
 @ToString
+@Entity
 @Table(name = "items", schema = "public")
 public class Item {
     @Id

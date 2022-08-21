@@ -14,23 +14,31 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
 
+    List<Booking> findAllByBookerIdAndEndAfterAndStartBeforeOrderByStartDesc(Long booker_id, LocalDateTime end,
+                                                                             LocalDateTime start);
+
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long booker_id, BookingStatus status);
 
     List<Booking> findAllByBookerIdAndStatusAndEndBeforeOrderByStartDesc(Long booker_id, BookingStatus status,
                                                                          LocalDateTime date);
 
-    List<Booking> findAllByBookerIdAndEndAfterOrderByStartDesc(Long booker_id, LocalDateTime date);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long booker_id, LocalDateTime date);
 
     List<Booking> findAllByItemInOrderByStartDesc(List<Item> items);
+    List<Booking> findAllByItemInAndEndAfterAndStartBeforeOrderByStartDesc(Collection<Item> item,
+                                                                                    LocalDateTime end, LocalDateTime start);
 
     List<Booking> findAllByItemInAndStatusOrderByStartDesc(Collection<Item> item, BookingStatus status);
 
     List<Booking> findAllByItemInAndStatusAndEndBeforeOrderByStartDesc(Collection<Item> item, BookingStatus status,
                                                                        LocalDateTime date);
 
-    List<Booking> findAllByItemInAndEndAfterOrderByStartDesc(Collection<Item> item, LocalDateTime date);
+    List<Booking> findAllByItemInAndStartAfterOrderByStartDesc(Collection<Item> item, LocalDateTime date);
 
     Booking findByItemIdAndEndIsBeforeOrderByEnd(Long itemId, LocalDateTime dateTime);
 
     Booking findByItemIdAndStartIsAfterOrderByStart(Long itemId, LocalDateTime dateTime);
+
+    List<Booking> findAllByItemIdAndStatusAndEndBefore(Long itemId, BookingStatus status,
+                                                       LocalDateTime dateTime);
 }

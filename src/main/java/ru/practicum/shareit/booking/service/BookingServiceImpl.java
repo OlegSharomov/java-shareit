@@ -108,20 +108,22 @@ REJECTED (англ. «отклонённые»). Бронирования дол
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
         List<Booking> bookings;
+        final LocalDateTime currentTime = LocalDateTime.now();
         switch (state.trim().toUpperCase()) {
             case "ALL":
                 bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, APPROVED);
+                bookings = bookingRepository.findAllByBookerIdAndEndAfterAndStartBeforeOrderByStartDesc(userId,
+                        currentTime, currentTime);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAllByBookerIdAndStatusAndEndBeforeOrderByStartDesc(userId,
-                        APPROVED, LocalDateTime.now());
+                        APPROVED, currentTime);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findAllByBookerIdAndEndAfterOrderByStartDesc(userId,
-                        LocalDateTime.now());
+                bookings = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId,
+                        currentTime);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, WAITING);
@@ -148,20 +150,22 @@ REJECTED (англ. «отклонённые»). Бронирования дол
             return Collections.emptyList();
         }
         List<Booking> bookings;
+        final LocalDateTime currentTime = LocalDateTime.now();
         switch (state.trim().toUpperCase()) {
             case "ALL":
                 bookings = bookingRepository.findAllByItemInOrderByStartDesc(items);
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findAllByItemInAndStatusOrderByStartDesc(items, APPROVED);
+                bookings = bookingRepository.findAllByItemInAndEndAfterAndStartBeforeOrderByStartDesc(items,
+                        currentTime, currentTime);
                 break;
             case "PAST":
                 bookings = bookingRepository.findAllByItemInAndStatusAndEndBeforeOrderByStartDesc(items,
-                        APPROVED, LocalDateTime.now());
+                        APPROVED, currentTime);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findAllByItemInAndEndAfterOrderByStartDesc(items,
-                        LocalDateTime.now());
+                bookings = bookingRepository.findAllByItemInAndStartAfterOrderByStartDesc(items,
+                        currentTime);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findAllByItemInAndStatusOrderByStartDesc(items, WAITING);

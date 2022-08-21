@@ -3,6 +3,9 @@ package ru.practicum.shareit.item.dto;
 import lombok.Builder;
 import lombok.Value;
 import ru.practicum.shareit.booking.dto.BookingDtoWithBookerId;
+import ru.practicum.shareit.item.comment.CommentDto;
+
+import java.util.List;
 
 @Value
 @Builder
@@ -13,4 +16,5 @@ public class ItemDtoAnswerFull {
     Boolean available;
     BookingDtoWithBookerId lastBooking;
     BookingDtoWithBookerId nextBooking;
+    List<CommentDto> comments;
 }
