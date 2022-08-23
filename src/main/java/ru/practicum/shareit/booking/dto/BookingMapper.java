@@ -12,8 +12,6 @@ public interface BookingMapper {
     @Mapping(source = "item.id", target = "item")
     BookingDtoAnswer toBookingDtoAnswer(Booking booking);
 
-    BookingDtoAnswerPatch toBookingDtoAnswerPatch(Booking booking);
-
     BookingDtoAnswerFull toBookingDtoAnswerFull(Booking booking);
 
     @Mapping(source = "booker.id", target = "bookerId")

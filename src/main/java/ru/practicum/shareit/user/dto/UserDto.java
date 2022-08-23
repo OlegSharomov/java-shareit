@@ -16,4 +16,5 @@ public class UserDto {
     @NotNull(message = "Email пользователя отсутствует")
     @Email(message = "Email не проходит проверку")
     private String email;
+
 }

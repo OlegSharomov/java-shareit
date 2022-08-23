@@ -2,7 +2,6 @@ package ru.practicum.shareit.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,7 +34,6 @@ public class ItemRequest {
     @OneToOne
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;     // — пользователь, создавший запрос
-//    private  LocalDateTime created;    // — дата и время создания запроса
 
     public ItemRequest() {
     }

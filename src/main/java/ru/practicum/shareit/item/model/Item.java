@@ -44,10 +44,6 @@ public class Item {
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 
-    public Boolean isAvailable() {
-        return available;
-    }
-
     public Item() {
     }
 

@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapper;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoAnswer;
 import ru.practicum.shareit.item.dto.ItemDtoAnswerFull;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -35,28 +36,27 @@ import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
 class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
-    private final UserService userService;
     private final BookingRepository bookingRepository;
+    private final UserService userService;
     private final ItemMapper itemMapper;
     private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
 
     @Override
     @Transactional
-    public Item getItemById(Long userId, Long itemId) {
+    public ItemDtoAnswerFull getItemById(Long userId, Long itemId) {
+        Item item = getEntityItemByIdFromStorage(userId, itemId);
+        return collectItemWithBookings(item, userId);
+    }
+
+    @Override
+    @Transactional
+    public Item getEntityItemByIdFromStorage(Long userId, Long itemId) {
         Optional<Item> optionalItem = itemRepository.findById(itemId);
         if (!optionalItem.isPresent()) {
             throw new NotFoundException(String.format("Вещь с переданным id = %d отсутствует в хранилище", itemId));
         }
         return optionalItem.get();
-    }
-
-    @Override
-    @Transactional
-    public ItemDtoAnswerFull getItemByIdAndConvertedToAnswer(Long userId, Long itemId) {
-        Item item = getItemById(userId, itemId);
-        ItemDtoAnswerFull answer = collectItemWithBookings(item, userId);
-        return answer;
     }
 
     @Transactional
@@ -74,28 +74,39 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<Item> getAllItemsOfUser(Long userId) {
-        return itemRepository.findAllByOwnerId(userId);
-    }
-
-    @Override
-    @Transactional
-    public List<ItemDtoAnswerFull> getAllItemsOfUserAndConvertedToAnswer(Long userId) {
-        List<Item> items = getAllItemsOfUser(userId);
+    public List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId) {
+        List<Item> items = getAllEntityItemsOfUserFromStorage(userId);
         return items.stream().map(x -> collectItemWithBookings(x, userId)).collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(readOnly = false)
-    public Item createItem(Long userId, Item item) {
-        User owner = userService.getUserById(userId);
-        item.setOwner(owner);
-        return itemRepository.save(item);
+    @Transactional
+    public List<Item> getAllEntityItemsOfUserFromStorage(Long userId) {
+        return itemRepository.findAllByOwnerId(userId);
     }
 
     @Override
     @Transactional(readOnly = false)
-    public Item updateItem(Long userId, Long itemId, ItemDto itemDto) {
+    public ItemDtoAnswer createItem(Long userId, ItemDto itemDto) {
+        if (itemDto.getId() != null && isItemExists(itemDto.getId())) {
+            throw new ValidationException("Данные вещи можно изменять только через метод PATCH");
+        }
+        Item item = itemMapper.toItem(itemDto);
+        User owner = userService.getEntityUserByIdFromStorage(userId);
+        item.setOwner(owner);
+        itemRepository.save(item);
+        return itemMapper.toItemDtoAnswer(item);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public ItemDtoAnswer updateItem(Long userId, Long itemId, ItemDto itemDto) {
+        if (itemDto.getId() != null && !itemDto.getId().equals(itemId)) {
+            throw new ValidationException("Id вещи изменять нельзя");
+        }
+        if (itemDto.getName() != null && itemDto.getName().trim().isEmpty()) {
+            throw new ValidationException("Название вещи не должно быть пустым");
+        }
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException("Пользователь с переданным id не найден");
         }
@@ -107,7 +118,8 @@ class ItemServiceImpl implements ItemService {
                         "Редактировать вещь может только её владелец.");
             }
             itemMapper.updateItemFromDto(itemDto, item);
-            return itemRepository.save(item);
+            itemRepository.save(item);
+            return itemMapper.toItemDtoAnswer(item);
         } else {
             throw new NotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
         }
@@ -115,19 +127,18 @@ class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<Item> searchForItemsByQueryText(String text) {
+    public List<ItemDtoAnswer> searchForItemsByQueryText(String text) {
         if (text.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        return itemRepository.findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
+        List<Item> items = itemRepository.
+                findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
+        return items.stream().map(itemMapper::toItemDtoAnswer).collect(Collectors.toList());
     }
 
-    //POST /items/{itemId}/comment
-    /*Не забудьте добавить проверку, что пользователь, который пишет комментарий, действительно брал вещь в аренду.
-     *Отзыв может оставить только тот пользователь, который брал эту вещь в аренду, и только после окончания срока аренды.*/
     @Override
     @Transactional(readOnly = false)
-    public Comment createComment(Long userId, Long itemId, CommentDto commentDto) {
+    public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatusAndEndBefore(itemId, APPROVED,
                 LocalDateTime.now());
         Optional<Booking> optionalBooking = bookings.stream().
@@ -144,6 +155,11 @@ class ItemServiceImpl implements ItemService {
                 .created(LocalDateTime.now())
                 .item(booking.getItem())
                 .build();
-        return commentRepository.save(comment);
+        commentRepository.save(comment);
+        return commentMapper.toCommentDto(comment);
+    }
+
+    public boolean isItemExists(Long itemId) {
+        return itemRepository.existsById(itemId);
     }
 }

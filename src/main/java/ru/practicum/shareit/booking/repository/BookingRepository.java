@@ -14,19 +14,20 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
 
-    List<Booking> findAllByBookerIdAndEndAfterAndStartBeforeOrderByStartDesc(Long booker_id, LocalDateTime end,
+    List<Booking> findAllByBookerIdAndEndAfterAndStartBeforeOrderByStartDesc(Long bookerId, LocalDateTime end,
                                                                              LocalDateTime start);
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long booker_id, BookingStatus status);
+    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
 
-    List<Booking> findAllByBookerIdAndStatusAndEndBeforeOrderByStartDesc(Long booker_id, BookingStatus status,
+    List<Booking> findAllByBookerIdAndStatusAndEndBeforeOrderByStartDesc(Long bookerId, BookingStatus status,
                                                                          LocalDateTime date);
 
-    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long booker_id, LocalDateTime date);
+    List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime date);
 
     List<Booking> findAllByItemInOrderByStartDesc(List<Item> items);
+
     List<Booking> findAllByItemInAndEndAfterAndStartBeforeOrderByStartDesc(Collection<Item> item,
-                                                                                    LocalDateTime end, LocalDateTime start);
+                                                                           LocalDateTime end, LocalDateTime start);
 
     List<Booking> findAllByItemInAndStatusOrderByStartDesc(Collection<Item> item, BookingStatus status);
 

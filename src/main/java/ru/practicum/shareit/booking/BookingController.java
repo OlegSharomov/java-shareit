@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswer;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswerFull;
-import ru.practicum.shareit.booking.dto.BookingDtoAnswerPatch;
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
@@ -31,32 +28,29 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
-    private final BookingMapper bookingMapper;
 
-    /* POST /bookings Добавление нового запроса на бронирование. Запрос может быть создан любым пользователем,
+    /*  Добавление нового запроса на бронирование. Запрос может быть создан любым пользователем,
     а затем подтверждён владельцем вещи. После создания запрос находится в статусе WAITING — «ожидает подтверждения». */
     @PostMapping
     public BookingDtoAnswer createBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                           @Valid @RequestBody BookingDto bookingDto) {
         log.info("Получен запрос POST/bookings от пользователя id = {} с переданным телом: {}", userId, bookingDto);
-        Booking booking = bookingMapper.toBooking(bookingDto);
-        return bookingService.createBooking(userId, booking);
+        return bookingService.createBooking(userId, bookingDto);
     }
 
-    /* PATCH /bookings/{bookingId}?approved={approved}
-    Подтверждение или отклонение запроса на бронирование. Может быть выполнено только владельцем вещи. Затем статус
-    бронирования становится либо APPROVED, либо REJECTED. Эндпоинт параметр approved может принимать значения true или false.*/
+    /* Подтверждение или отклонение запроса на бронирование. Может быть выполнено только владельцем вещи.
+    Затем статус бронирования становится либо APPROVED, либо REJECTED.*/
     @PatchMapping("/{bookingId}")
-    public BookingDtoAnswerPatch changeRequestStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                     @NotNull(message = "Переменная bookingId должна быть заполнена")
-                                                     @PathVariable("bookingId") Long bookingId,
-                                                     @NotNull @RequestParam("approved") Boolean approved) {
+    public BookingDtoAnswerFull changeRequestStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                    @NotNull(message = "Переменная bookingId должна быть заполнена")
+                                                    @PathVariable("bookingId") Long bookingId,
+                                                    @NotNull @RequestParam("approved") Boolean approved) {
         log.info("Получен запрос PATCH/bookings/{bookingId}?approved={approved} от пользователя id = {} " +
                 "на подтверждение бронирования: {}, со значением {}", userId, bookingId, approved);
         return bookingService.updateBookingStatus(userId, bookingId, approved);
     }
 
-    /* GET /bookings/{bookingId}    Получение данных о конкретном бронировании (включая его статус).
+    /*  Получение данных о конкретном бронировании (включая его статус).
     Может быть выполнено либо автором бронирования, либо владельцем вещи, к которой относится бронирование.*/
     @GetMapping("/{bookingId}")
     public BookingDtoAnswerFull getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
@@ -68,10 +62,10 @@ public class BookingController {
     }
 
 
-    /* GET /bookings?state={state}    Получение списка всех бронирований текущего пользователя. Параметр state
-    необязательный и по умолчанию равен ALL (англ. «все»). Также он может принимать значения CURRENT (англ. «текущие»),
-    **PAST** (англ. «завершённые»), FUTURE (англ. «будущие»), WAITING (англ. «ожидающие подтверждения»),
-    REJECTED (англ. «отклонённые»). Бронирования должны возвращаться отсортированными по дате от более новых к более старым.*/
+    /*  Получение списка всех бронирований текущего пользователя. Параметр state необязательный и по умолчанию
+    равен ALL (англ. «все»). Также он может принимать значения CURRENT (англ. «текущие»), PAST (англ. «завершённые»),
+    FUTURE (англ. «будущие»), WAITING (англ. «ожидающие подтверждения»), REJECTED (англ. «отклонённые»).
+    Бронирования должны возвращаться отсортированными по дате от более новых к более старым.*/
     @GetMapping
     public List<BookingDtoAnswerFull> getAllBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                            @RequestParam(required = false,
@@ -82,8 +76,7 @@ public class BookingController {
     }
 
 
-    /* GET /bookings/owner?state={state}   Получение списка бронирований для всех вещей текущего пользователя.
-    Этот запрос имеет смысл для владельца хотя бы одной вещи. Работа параметра state аналогична его работе в предыдущем сценарии.*/
+    /* GET /bookings/owner?state={state}   Получение списка бронирований для всех вещей текущего пользователя.*/
     @GetMapping("/owner")
     public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                                  @RequestParam(required = false,

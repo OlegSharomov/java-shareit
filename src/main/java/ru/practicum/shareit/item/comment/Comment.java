@@ -46,13 +46,6 @@ public class Comment {
     public Comment() {
     }
 
-    public Comment(String text, User author, LocalDateTime created, Item item) {
-        this.text = text;
-        this.author = author;
-        this.created = created;
-        this.item = item;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

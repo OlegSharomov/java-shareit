@@ -1,27 +1,35 @@
 package ru.practicum.shareit.item.service;
 
-import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoAnswer;
 import ru.practicum.shareit.item.dto.ItemDtoAnswerFull;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 public interface ItemService {
-    Item getItemById(Long userId, Long itemId);
 
-    ItemDtoAnswerFull getItemByIdAndConvertedToAnswer(Long userId, Long itemId);
+    // получение вещи для контроллера
+    ItemDtoAnswerFull getItemById(Long userId, Long itemId);
 
-    List<Item> getAllItemsOfUser(Long userId);
+    // получение сущности БД из хранилища
+    Item getEntityItemByIdFromStorage(Long userId, Long itemId);
 
-    List<ItemDtoAnswerFull> getAllItemsOfUserAndConvertedToAnswer(Long userId);
+    // получение списка вещей для контроллера
+    List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId);
 
-    Item createItem(Long userId, Item itemDtoService);
+    // получение списка сущностей БД из хранилища
+    List<Item> getAllEntityItemsOfUserFromStorage(Long userId);
 
-    Item updateItem(Long userId, Long itemId, ItemDto itemDtoService);
+    ItemDtoAnswer createItem(Long userId, ItemDto itemDto);
 
-    List<Item> searchForItemsByQueryText(String text);
+    ItemDtoAnswer updateItem(Long userId, Long itemId, ItemDto itemDto);
 
-    Comment createComment(Long userId, Long itemId, CommentDto commentDto);
+    // Получение списка вещей по ключевым словам
+    List<ItemDtoAnswer> searchForItemsByQueryText(String text);
+
+    CommentDto createComment(Long userId, Long itemId, CommentDto commentDto);
+
+    boolean isItemExists(Long itemId);
 }

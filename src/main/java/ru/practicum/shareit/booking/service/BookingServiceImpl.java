@@ -3,9 +3,9 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswer;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswerFull;
-import ru.practicum.shareit.booking.dto.BookingDtoAnswerPatch;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -39,13 +39,17 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = false)
-    public BookingDtoAnswer createBooking(Long userId, Booking booking) {
-        User booker = userService.getUserById(userId);
-        booking.setBooker(booker);
-        Item item = itemService.getItemById(userId, booking.getItem().getId());
+    public BookingDtoAnswer createBooking(Long userId, BookingDto bookingDto) {
+        if (bookingDto.getId() != null && isBookingExists(bookingDto.getId())) {
+            throw new ValidationException("Данные бронирования можно изменять только через метод PATCH");
+        }
+        Booking booking = bookingMapper.toBooking(bookingDto);
+        Item item = itemService.getEntityItemByIdFromStorage(userId, booking.getItem().getId());
         if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Запрашиваемая вещь не доступна для бронирования");
         }
+        User booker = userService.getEntityUserByIdFromStorage(userId);
+        booking.setBooker(booker);
         booking.setItem(item);
         booking.setStatus(WAITING);
         if (!item.getAvailable()) {
@@ -57,7 +61,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = false)
-    public BookingDtoAnswerPatch updateBookingStatus(Long userId, Long bookingId, Boolean approved) {
+    public BookingDtoAnswerFull updateBookingStatus(Long userId, Long bookingId, Boolean approved) {
         Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
         if (!optionalBooking.isPresent()) {
             throw new NotFoundException(String.format("Запрашиваемое бронирование с id = %d не найдено", bookingId));
@@ -75,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
         } else {
             booking.setStatus(REJECTED);
         }
-        return bookingMapper.toBookingDtoAnswerPatch(bookingRepository.save(booking));
+        return bookingMapper.toBookingDtoAnswerFull(bookingRepository.save(booking));
     }
 
     @Override
@@ -97,10 +101,6 @@ public class BookingServiceImpl implements BookingService {
         return bookingMapper.toBookingDtoAnswerFull(booking);
     }
 
-    /*  Получение списка всех бронирований текущего пользователя. Параметр state
-необязательный и по умолчанию равен ALL (англ. «все»). Также он может принимать значения CURRENT (англ. «текущие»),
-**PAST** (англ. «завершённые»), FUTURE (англ. «будущие»), WAITING (англ. «ожидающие подтверждения»),
-REJECTED (англ. «отклонённые»). Бронирования должны возвращаться отсортированными по дате от более новых к более старым.*/
     @Override
     @Transactional
     public List<BookingDtoAnswerFull> getAllBookingsOfUser(Long userId, String state) {
@@ -137,12 +137,10 @@ REJECTED (англ. «отклонённые»). Бронирования дол
         return bookings.stream().map(bookingMapper::toBookingDtoAnswerFull).collect(Collectors.toList());
     }
 
-    /*  Получение списка бронирований для всех вещей текущего пользователя.
-    Этот запрос имеет смысл для владельца хотя бы одной вещи. Работа параметра state аналогична его работе в предыдущем сценарии.*/
     @Override
     @Transactional
     public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(Long userId, String state) {
-        List<Item> items = itemService.getAllItemsOfUser(userId);
+        List<Item> items = itemService.getAllEntityItemsOfUserFromStorage(userId);
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
@@ -179,15 +177,9 @@ REJECTED (англ. «отклонённые»). Бронирования дол
         return bookings.stream().map(bookingMapper::toBookingDtoAnswerFull).collect(Collectors.toList());
     }
 
-    /*Метод для получения последнего и следующего бронирования вещи */
-    @Override
-    @Transactional
-    public List<Booking> getLastAndNextBookingOfItem(Long item) {
-        Booking last = bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(item, LocalDateTime.now());
-        Booking next = bookingRepository.findByItemIdAndStartIsAfterOrderByStart(item, LocalDateTime.now());
-        return List.of(last, next);
+    public boolean isBookingExists(Long bookingId) {
+        return bookingRepository.existsById(bookingId);
     }
-
 }
 
 
