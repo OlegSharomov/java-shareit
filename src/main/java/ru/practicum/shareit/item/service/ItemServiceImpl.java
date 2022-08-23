@@ -131,8 +131,8 @@ class ItemServiceImpl implements ItemService {
         if (text.trim().isEmpty()) {
             return Collections.emptyList();
         }
-        List<Item> items = itemRepository.
-                findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
+        List<Item> items = itemRepository
+                .findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
         return items.stream().map(itemMapper::toItemDtoAnswer).collect(Collectors.toList());
     }
 
@@ -141,8 +141,8 @@ class ItemServiceImpl implements ItemService {
     public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatusAndEndBefore(itemId, APPROVED,
                 LocalDateTime.now());
-        Optional<Booking> optionalBooking = bookings.stream().
-                filter(x -> x.getBooker().getId().equals(userId) && x.getItem().getId().equals(itemId))
+        Optional<Booking> optionalBooking = bookings.stream()
+                .filter(x -> x.getBooker().getId().equals(userId) && x.getItem().getId().equals(itemId))
                 .findFirst();
         if (!optionalBooking.isPresent()) {
             throw new ValidationException("Пользователь не может оставить отзыв об этой вещи, " +

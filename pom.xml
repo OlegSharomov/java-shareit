@@ -17,7 +17,6 @@
 
     <properties>
         <java.version>11</java.version>
-        <!--my changes-->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.source>11</maven.compiler.source>
@@ -56,11 +55,9 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <!--			my changes-->
             <version>${version.lombok}</version>
             <optional>true</optional>
         </dependency>
-        <!--my changes-->
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -103,7 +100,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-<!--my changes-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -130,7 +126,6 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-
         </plugins>
         <pluginManagement>
             <plugins>
