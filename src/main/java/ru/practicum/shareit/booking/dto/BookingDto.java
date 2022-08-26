@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.user.model.User;
 
@@ -8,7 +10,9 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@Value
+@Data
+@Builder
+@AllArgsConstructor
 public class BookingDto {
     Long id;
     @NotNull
@@ -20,4 +24,7 @@ public class BookingDto {
     Long itemId;
     User booker;    // пользователь, который осуществляет бронирование
     BookingStatus status;
+
+    public BookingDto() {
+    }
 }

@@ -19,4 +19,6 @@ public class UserDto {
     @Email(message = "Email не проходит проверку")
     private String email;
 
+    public UserDto() {
+    }
 }
