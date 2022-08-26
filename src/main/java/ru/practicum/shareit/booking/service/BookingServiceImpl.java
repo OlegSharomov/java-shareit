@@ -20,7 +20,6 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
@@ -62,11 +61,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = false)
     public BookingDtoAnswerFull updateBookingStatus(Long userId, Long bookingId, Boolean approved) {
-        Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
-        if (!optionalBooking.isPresent()) {
-            throw new NotFoundException(String.format("Запрашиваемое бронирование с id = %d не найдено", bookingId));
-        }
-        Booking booking = optionalBooking.get();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String
+                .format("Запрашиваемое бронирование с id = %d не найдено", bookingId)));
         if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new NotFoundException(String.format("Пользователь с id = %d не может редактировать статус " +
                     "бронирования для вещи id = %d, т.к. он не является ее хозяином", userId, booking.getItem().getId()));
@@ -88,11 +84,8 @@ public class BookingServiceImpl implements BookingService {
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
-        Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
-        if (!optionalBooking.isPresent()) {
-            throw new NotFoundException(String.format("Запрашиваемое бронирование с id = %d не найдено", bookingId));
-        }
-        Booking booking = optionalBooking.get();
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String
+                .format("Запрашиваемое бронирование с id = %d не найдено", bookingId)));
         if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner().getId())) {
             throw new NotFoundException(String.format("Пользователь с id = %d не имеет доступа к проссмотру " +
                     "бронирования id = %d", userId, bookingId

@@ -12,7 +12,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,26 +31,16 @@ class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDtoAnswer getUserById(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            return userMapper.toUserDtoAnswer(user);
-        } else {
-            throw new NotFoundException(String
-                    .format("Пользователь с переданным id = %d отсутствует в хранилище", userId));
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String
+                .format("Пользователь с переданным id = %d отсутствует в хранилище", userId)));
+        return userMapper.toUserDtoAnswer(user);
     }
 
     @Override
     @Transactional
     public User getEntityUserByIdFromStorage(Long userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        } else {
-            throw new NotFoundException(String
-                    .format("Пользователь с переданным id = %d отсутствует в хранилище", userId));
-        }
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String
+                .format("Пользователь с переданным id = %d отсутствует в хранилище", userId)));
     }
 
     @Override
@@ -77,14 +66,10 @@ class UserServiceImpl implements UserService {
         if (userDto.getEmail() != null && userDto.getEmail().trim().isEmpty()) {
             throw new ValidationException("Поле email должно быть заполнено");
         }
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            userMapper.updateUserFromDto(userDto, user);
-            return userMapper.toUserDtoAnswer(user);
-        } else {
-            throw new NotFoundException("Пользователь с переданным id не найден");
-        }
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователь с переданным id не найден"));
+        userMapper.updateUserFromDto(userDto, user);
+        return userMapper.toUserDtoAnswer(user);
     }
 
     @Override

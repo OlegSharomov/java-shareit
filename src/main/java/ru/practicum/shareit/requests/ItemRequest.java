@@ -13,7 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Objects;
 
@@ -31,16 +31,11 @@ public class ItemRequest {
     private Long id;
     @Column(name = "description")
     private String description;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;     // — пользователь, создавший запрос
 
     public ItemRequest() {
-    }
-
-    public ItemRequest(String description, User requestor) {
-        this.description = description;
-        this.requestor = requestor;
     }
 
     @Override

@@ -25,7 +25,6 @@ import ru.practicum.shareit.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
@@ -52,11 +51,8 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Item getEntityItemByIdFromStorage(Long userId, Long itemId) {
-        Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (!optionalItem.isPresent()) {
-            throw new NotFoundException(String.format("Вещь с переданным id = %d отсутствует в хранилище", itemId));
-        }
-        return optionalItem.get();
+        return itemRepository.findById(itemId).orElseThrow(() ->
+                new NotFoundException(String.format("Вещь с переданным id = %d отсутствует в хранилище", itemId)));
     }
 
     @Transactional
@@ -110,19 +106,15 @@ class ItemServiceImpl implements ItemService {
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException("Пользователь с переданным id не найден");
         }
-        Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if (optionalItem.isPresent()) {
-            Item item = optionalItem.get();
-            if (!item.getOwner().getId().equals(userId)) {
-                throw new OwnerVerificationException("Доступ к редактированию ограничен. " +
-                        "Редактировать вещь может только её владелец.");
-            }
-            itemMapper.updateItemFromDto(itemDto, item);
-            itemRepository.save(item);
-            return itemMapper.toItemDtoAnswer(item);
-        } else {
-            throw new NotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String
+                .format("Вещь с переданным id = %d не найдена", itemId)));
+        if (!item.getOwner().getId().equals(userId)) {
+            throw new OwnerVerificationException("Доступ к редактированию ограничен. " +
+                    "Редактировать вещь может только её владелец.");
         }
+        itemMapper.updateItemFromDto(itemDto, item);
+        itemRepository.save(item);
+        return itemMapper.toItemDtoAnswer(item);
     }
 
     @Override
@@ -141,14 +133,11 @@ class ItemServiceImpl implements ItemService {
     public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatusAndEndBefore(itemId, APPROVED,
                 LocalDateTime.now());
-        Optional<Booking> optionalBooking = bookings.stream()
+        Booking booking = bookings.stream()
                 .filter(x -> x.getBooker().getId().equals(userId) && x.getItem().getId().equals(itemId))
-                .findFirst();
-        if (!optionalBooking.isPresent()) {
-            throw new ValidationException("Пользователь не может оставить отзыв об этой вещи, " +
-                    "т.к. отсутстуют данные о бронировании");
-        }
-        Booking booking = optionalBooking.get();
+                .findFirst()
+                .orElseThrow(() -> new ValidationException("Пользователь не может оставить отзыв об этой вещи, " +
+                        "т.к. отсутстуют данные о бронировании"));
         Comment comment = Comment.builder()
                 .text(commentDto.getText())
                 .author(booking.getBooker())
