@@ -42,6 +42,9 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDto.getId() != null && isBookingExists(bookingDto.getId())) {
             throw new ValidationException("Данные бронирования можно изменять только через метод PATCH");
         }
+        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
+            throw new ValidationException("Дата начала бронирования должна быть раньше даты окончания бронирования");
+        }
         Booking booking = bookingMapper.toBooking(bookingDto);
         Item item = itemService.getEntityItemByIdFromStorage(userId, booking.getItem().getId());
         if (item.getOwner().getId().equals(userId)) {
