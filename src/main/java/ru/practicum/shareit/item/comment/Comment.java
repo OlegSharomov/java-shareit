@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.comment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.item.model.Item;
@@ -21,6 +22,7 @@ import java.util.Objects;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -42,9 +44,6 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
-
-    public Comment() {
-    }
 
     @Override
     public boolean equals(Object o) {

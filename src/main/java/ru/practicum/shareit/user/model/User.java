@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
 @Entity
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -30,9 +32,6 @@ public class User {
     private String name;
     @Column(name = "email", unique = true)
     private String email;
-
-    public User() {
-    }
 
     public User(String name, String email) {
         this.name = name;

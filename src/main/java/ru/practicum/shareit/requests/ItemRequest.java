@@ -3,6 +3,7 @@ package ru.practicum.shareit.requests;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
@@ -17,8 +18,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Objects;
 
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -35,8 +37,6 @@ public class ItemRequest {
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
     private User requestor;     // — пользователь, создавший запрос
 
-    public ItemRequest() {
-    }
 
     @Override
     public boolean equals(Object o) {

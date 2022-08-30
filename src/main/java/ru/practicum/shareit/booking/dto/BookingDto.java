@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.user.model.User;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class BookingDto {
     Long id;
     @NotNull
@@ -24,7 +26,4 @@ public class BookingDto {
     Long itemId;
     User booker;    // пользователь, который осуществляет бронирование
     BookingStatus status;
-
-    public BookingDto() {
-    }
 }

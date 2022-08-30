@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.practicum.shareit.booking.BookingStatus;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -49,9 +51,6 @@ public class Booking {
     @Column(name = "status")
     private BookingStatus status;   /* - статус бронирования (ожидает одобрения, подтверждено владельцем,
                                      отклонено владельцем или отменено создателем) */
-
-    public Booking() {
-    }
 
     @Override
     public boolean equals(Object o) {

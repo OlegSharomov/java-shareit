@@ -56,7 +56,7 @@ class ItemServiceImpl implements ItemService {
     }
 
     @Transactional
-    ItemDtoAnswerFull collectItemWithBookings(Item item, Long userId) {
+    public ItemDtoAnswerFull collectItemWithBookings(Item item, Long userId) {
         List<Comment> comments = commentRepository.findAllByItemId(item.getId());
         List<CommentDto> commentsDto = comments.stream()
                 .map(x -> commentMapper.toCommentDto(x, x.getAuthor()))

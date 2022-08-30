@@ -41,9 +41,15 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
         logMakeNote(e);
-        return new ErrorResponse(
-                String.format("При обработке поля %s произошла ошибка. %s",
-                        Objects.requireNonNull(e.getFieldError()).getField(), e.getFieldError().getDefaultMessage()));
+        ErrorResponse answer;
+        try {
+            answer = new ErrorResponse(String.format("При обработке поля %s произошла ошибка. %s",
+                    Objects.requireNonNull(e.getFieldError()).getField(),
+                    e.getFieldError().getDefaultMessage()));
+        } catch (NullPointerException ex) {
+            answer = new ErrorResponse("Ошибка валидации");
+        }
+        return answer;
     }
 
     @ExceptionHandler
