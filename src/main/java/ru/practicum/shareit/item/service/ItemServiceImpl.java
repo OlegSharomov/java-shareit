@@ -58,7 +58,9 @@ class ItemServiceImpl implements ItemService {
     @Transactional
     ItemDtoAnswerFull collectItemWithBookings(Item item, Long userId) {
         List<Comment> comments = commentRepository.findAllByItemId(item.getId());
-        List<CommentDto> commentsDto = comments.stream().map(commentMapper::toCommentDto).collect(Collectors.toList());
+        List<CommentDto> commentsDto = comments.stream()
+                .map(x -> commentMapper.toCommentDto(x, x.getAuthor()))
+                .collect(Collectors.toList());
         if (!item.getOwner().getId().equals(userId)) {
             return itemMapper.toItemDtoAnswerFull(item, null, null, commentsDto);
         }
@@ -131,6 +133,12 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
+        if (!userService.isUserExists(userId)) {
+            throw new NotFoundException(String.format("Пользователь с переданным id = %d не найдена", userId));
+        }
+        if (!itemRepository.existsById(itemId)) {
+            throw new NotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
+        }
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatusAndEndBefore(itemId, APPROVED,
                 LocalDateTime.now());
         Booking booking = bookings.stream()
@@ -145,7 +153,7 @@ class ItemServiceImpl implements ItemService {
                 .item(booking.getItem())
                 .build();
         commentRepository.save(comment);
-        return commentMapper.toCommentDto(comment);
+        return commentMapper.toCommentDto(comment, comment.getAuthor());
     }
 
     public boolean isItemExists(Long itemId) {
