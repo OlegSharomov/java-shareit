@@ -15,7 +15,10 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,7 +33,7 @@ class ShareItTests {
     ObjectMapper mapper;
 
     ItemDto item1 = ItemDto.builder().name("Шуруповерт").description("Аккумуляторный").available(true).build();
-    ItemDto item2 = ItemDto.builder().id(1L).name("Перфоратор").description("Сетевой").available(true).build();
+    ItemDto item2 = ItemDto.builder().name("Перфоратор").description("Сетевой").available(true).build();
 
     private String getJacksonUserWithoutId() throws JsonProcessingException {
         UserDto user = UserDto.builder()
@@ -42,7 +45,6 @@ class ShareItTests {
 
     private String getJacksonUserId2() throws JsonProcessingException {
         UserDto user = UserDto.builder()
-                .id(2L)
                 .name("Nicolay")
                 .email("Nicolay@mail.com")
                 .build();
@@ -50,13 +52,13 @@ class ShareItTests {
     }
 
     @Test
-    @Order(0)
+    @Order(1)
     void contextLoads() {
     }
 
     @Test
-    @Order(1)
-    public void shouldCreateUserWithWrongId() throws Exception {
+    @Order(2)
+    public void shouldCreateUser() throws Exception {
         mockMvc.perform(post("/users").content(getJacksonUserId2())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -64,15 +66,6 @@ class ShareItTests {
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.name").value("Nicolay"))
                 .andExpect(jsonPath("$.email").value("Nicolay@mail.com"));
-    }
-
-    @Test
-    @Order(2)
-    public void shouldNotCreateUserWithDuplicateEmail() throws Exception {
-        mockMvc.perform(post("/users").content(getJacksonUserId2())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isConflict());
     }
 
     @Test
@@ -213,12 +206,23 @@ class ShareItTests {
     @Test
     @Order(15)
     public void shouldNotRemoveNonexistentUser() throws Exception {
-        mockMvc.perform(delete("/users/{userId}", 99))
+        mockMvc.perform(delete("/users/{userId}", 9999))
                 .andExpect(status().isNotFound());
     }
 
+    //    Новые изменения
+    //
     @Test
     @Order(16)
+    public void shouldNotCreateUserWithDuplicateEmail() throws Exception {
+        mockMvc.perform(post("/users").content(getJacksonUserWithoutId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(17)
     public void shouldCreateItem1() throws Exception {
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(item1))
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -229,7 +233,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(17)
+    @Order(18)
     public void shouldNotCreateItemWithWrongUserId() throws Exception {
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(item2))
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "99"))
@@ -237,7 +241,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(18)
+    @Order(19)
     public void shouldNotCreateItemWithEmptyName() throws Exception {
         ItemDto itemDto = ItemDto.builder().name(" ").description("Описание").available(true).build();
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
@@ -246,8 +250,8 @@ class ShareItTests {
     }
 
     @Test
-    @Order(19)
-    public void shouldNotCreateItemWWithoutDescription() throws Exception {
+    @Order(20)
+    public void shouldNotCreateItemWithoutDescription() throws Exception {
         ItemDto itemDto = ItemDto.builder().name("Имя").available(true).build();
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -255,7 +259,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(20)
+    @Order(21)
     public void shouldNotCreateItemWithoutAvailable() throws Exception {
         ItemDto itemDto = ItemDto.builder().name("Строительный фен").description("950 С").build();
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
@@ -264,8 +268,8 @@ class ShareItTests {
     }
 
     @Test
-    @Order(21)
-    public void shouldCreateItem2WithWrongId() throws Exception {
+    @Order(22)
+    public void shouldCreateItem2() throws Exception {
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(item2))
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
                 .andExpect(jsonPath("id").value("2"))
@@ -275,7 +279,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(22)
+    @Order(23)
     public void shouldGetAllItems() throws Exception {
         mockMvc.perform(get("/items").contentType(MediaType.APPLICATION_JSON)
                         .header("X-Sharer-User-Id", "1"))
@@ -292,7 +296,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(23)
+    @Order(24)
     public void shouldUpdateNameOfItem1() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"name\":\"Шуруповерт с битами\"}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -303,7 +307,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(24)
+    @Order(25)
     public void shouldUpdateDescriptionOfItem1() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"description\":\"Аккумуляторный 18V\"}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -314,7 +318,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(25)
+    @Order(26)
     public void shouldUpdateAvailableOfItem1() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"available\":false}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -325,7 +329,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(26)
+    @Order(27)
     public void shouldNotUpdateItem1WithWrongId() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"id\":99}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -339,7 +343,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(27)
+    @Order(28)
     public void shouldNotUpdateItem1WithWrongName() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"name\":\" \"}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -347,7 +351,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(28)
+    @Order(29)
     public void shouldNotUpdateItem1WithWrongOwner() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"name\":\"Шурик\"}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "2"))
@@ -356,7 +360,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(29)
+    @Order(30)
     public void shouldNotUpdateItem1WithNonExistsItemId() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 99).content("{\"name\":\"Шурик\"}")
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
@@ -364,7 +368,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(30)
+    @Order(31)
     public void shouldNotFindItemWithFalseAvailable() throws Exception {
         mockMvc.perform(get("/items/search").header("X-Sharer-User-Id", "2")
                         .param("text", "аККум").contentType(MediaType.APPLICATION_JSON))
@@ -372,7 +376,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(31)
+    @Order(32)
     public void shouldFindItemByDescription() throws Exception {
         mockMvc.perform(patch("/items/{itemId}", 1).content("{\"available\":true}")
                         .header("X-Sharer-User-Id", "1").contentType(MediaType.APPLICATION_JSON))
@@ -389,7 +393,7 @@ class ShareItTests {
     }
 
     @Test
-    @Order(32)
+    @Order(33)
     public void shouldFindItemByName() throws Exception {
         mockMvc.perform(get("/items/search").header("X-Sharer-User-Id", "2")
                         .param("text", "перФ").contentType(MediaType.APPLICATION_JSON))

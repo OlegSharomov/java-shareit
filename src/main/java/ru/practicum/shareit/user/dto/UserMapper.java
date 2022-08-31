@@ -1,23 +1,17 @@
 package ru.practicum.shareit.user.dto;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.user.model.User;
 
-@Component
-public class UserMapper {
-    public User toUser(UserDto userDto) {
-        return User.builder()
-                .id(userDto.getId())
-                .name(userDto.getName())
-                .email(userDto.getEmail())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    User toUser(UserDto userDto);
 
-    public UserDtoForAnswer toUserDtoForAnswer(User user) {
-        return UserDtoForAnswer.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-    }
+    UserDtoAnswer toUserDtoAnswer(User user);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserFromDto(UserDto dto, @MappingTarget User user);
 }
