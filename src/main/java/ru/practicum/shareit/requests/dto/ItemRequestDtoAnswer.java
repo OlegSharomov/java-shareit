@@ -10,6 +10,5 @@ import java.time.LocalDateTime;
 public class ItemRequestDtoAnswer {
     private Long id;
     private String description;
-//    private Long requestId;
     private LocalDateTime created;
 }

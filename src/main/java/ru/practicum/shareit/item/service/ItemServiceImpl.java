@@ -19,6 +19,8 @@ import ru.practicum.shareit.item.dto.ItemDtoAnswerFull;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.requests.model.ItemRequest;
+import ru.practicum.shareit.requests.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
@@ -36,6 +38,7 @@ class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
     private final UserService userService;
     private final ItemMapper itemMapper;
     private final BookingMapper bookingMapper;
@@ -89,11 +92,23 @@ class ItemServiceImpl implements ItemService {
         if (itemDto.getId() != null && isItemExists(itemDto.getId())) {
             throw new ValidationException("Данные вещи можно изменять только через метод PATCH");
         }
-        Item item = itemMapper.toItem(itemDto);
+        //
+        //
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                    new NotFoundException("Переданный id запроса вещи не найден"));
+        }
+//        Item item = itemMapper.toItem(itemDto);
+        Item item = itemMapper.toItem(itemDto, itemRequest);
+        //
+        //
         User owner = userService.getEntityUserByIdFromStorage(userId);
         item.setOwner(owner);
         itemRepository.save(item);
-        return itemMapper.toItemDtoAnswer(item);
+
+
+        return itemMapper.toItemDtoAnswer(item, item.getRequest());
     }
 
     @Override
@@ -116,7 +131,7 @@ class ItemServiceImpl implements ItemService {
         }
         itemMapper.updateItemFromDto(itemDto, item);
         itemRepository.save(item);
-        return itemMapper.toItemDtoAnswer(item);
+        return itemMapper.toItemDtoAnswer(item, item.getRequest());
     }
 
     @Override
@@ -127,7 +142,10 @@ class ItemServiceImpl implements ItemService {
         }
         List<Item> items = itemRepository
                 .findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
-        return items.stream().map(itemMapper::toItemDtoAnswer).collect(Collectors.toList());
+        return items.stream()
+//                .map(itemMapper::toItemDtoAnswer)
+                .map(x -> itemMapper.toItemDtoAnswer(x, x.getRequest()))
+                .collect(Collectors.toList());
     }
 
     @Override

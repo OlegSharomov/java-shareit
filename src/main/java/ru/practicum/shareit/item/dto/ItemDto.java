@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.requests.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.validation.constraints.NotBlank;
@@ -23,6 +22,5 @@ public class ItemDto {
     @NotNull(message = "Отсутствует статус доступности вещи для аренды")
     private Boolean available;
     private User owner;
-    private ItemRequest request;
     private Long requestId;
 }

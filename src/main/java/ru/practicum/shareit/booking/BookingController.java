@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,8 +20,10 @@ import ru.practicum.shareit.booking.service.BookingService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @Slf4j
 @RestController
 @RequestMapping(path = "/bookings")
@@ -67,21 +70,30 @@ public class BookingController {
     FUTURE (англ. «будущие»), WAITING (англ. «ожидающие подтверждения»), REJECTED (англ. «отклонённые»).
     Бронирования должны возвращаться отсортированными по дате от более новых к более старым.*/
     @GetMapping
-    public List<BookingDtoAnswerFull> getAllBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                           @RequestParam(required = false,
-                                                                   defaultValue = "ALL") String state) {
+    public List<BookingDtoAnswerFull>
+    getAllBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+                         @RequestParam(required = false,
+                                 defaultValue = "ALL") String state,
+                         @RequestParam(required = false) @PositiveOrZero(message = "Значение from должно быть " +
+                                 "позитивным или 0") Integer from,
+                         @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")
+                         Integer size) {
         log.info("Получен запрос GET/bookings?state={state} от пользователя id = {} " +
                 "на просмотр бронирований со статусом: {}", userId, state);
-        return bookingService.getAllBookingsOfUser(userId, state);
+        return bookingService.getAllBookingsOfUser(userId, state, from, size);
     }
 
 
     /* GET /bookings/owner?state={state}   Получение списка бронирований для всех вещей текущего пользователя.*/
     @GetMapping("/owner")
-    public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                                 @RequestParam(required = false,
-                                                                         defaultValue = "ALL") String state) {
-        return bookingService.getAllBookingsOfItemsOwner(userId, state);
+    public List<BookingDtoAnswerFull>
+    getAllBookingsOfItemsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+                               @RequestParam(required = false,
+                                       defaultValue = "ALL") String state,
+                               @RequestParam(required = false) @PositiveOrZero(message = "Значение from должно быть " +
+                                       "позитивным или 0") Integer from,
+                               @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")
+                               Integer size) {
+        return bookingService.getAllBookingsOfItemsOwner(userId, state, from, size);
     }
-
 }

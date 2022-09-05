@@ -8,7 +8,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.ItemDtoAnswer;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.dto.ItemRequestDtoAnswer;
@@ -32,7 +33,7 @@ public class ItemRequestService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final ItemRequestMapper itemRequestMapper;
-
+    private final ItemMapper itemMapper;
 
     @Transactional(readOnly = false)
     public ItemRequestDtoAnswer createItemRequest(ItemRequestDto itemRequestDto, Long userId, LocalDateTime createDate) {
@@ -40,7 +41,6 @@ public class ItemRequestService {
         ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto, requestor, createDate);
         itemRequestsRepository.save(itemRequest);
         return itemRequestMapper.toItemRequestDtoAnswer(itemRequest
-//                , requestor
         );
     }
 
@@ -50,9 +50,10 @@ public class ItemRequestService {
         List<ItemRequest> requests = itemRequestsRepository.getItemRequestsByRequestor(requestor);
         return requests.stream()
                 .map(x -> {
-                    List<Item> items = itemRepository.findAllByRequest(x);
+                    List<ItemDtoAnswer> items = itemRepository.findAllByRequest(x).stream()
+                            .map(e -> (itemMapper.toItemDtoAnswer(e, e.getRequest())))
+                            .collect(Collectors.toList());
                     return itemRequestMapper.toItemRequestDtoAnswerFull(x,
-//                            userId,
                             items);
                 })
                 .collect(Collectors.toList());
@@ -63,29 +64,30 @@ public class ItemRequestService {
         if (from == null || size == null) {
             return Collections.emptyList();
         }
-        Pageable pag = PageRequest.of(from, size, Sort.by("created"));
-        Page<ItemRequest> page = itemRequestsRepository.findAll(pag);
-//        Page<ItemRequestDtoAnswerFull> pageAnswer = page.map(x -> {
-//            List<Item> items = itemRepository.findAllByRequest(x);
-//            return itemRequestMapper.toItemRequestDtoAnswerFull(x, items);
-//        });
-//        return pageAnswer;
-        List<ItemRequestDtoAnswerFull> answer = page.stream()
+        Pageable pag = PageRequest.of(from / size, size, Sort.by("created").descending());
+        User requestor = userService.getEntityUserByIdFromStorage(userId);
+        Page<ItemRequest> page = itemRequestsRepository.findAllByRequestorNotLike(requestor, pag);
+        return page.stream()
                 .map(x -> {
-                    List<Item> items = itemRepository.findAllByRequest(x);
+                    List<ItemDtoAnswer> items = itemRepository.findAllByRequest(x).stream()
+                            .map(e -> itemMapper.toItemDtoAnswer(e, e.getRequest()))
+                            .collect(Collectors.toList());
                     return itemRequestMapper.toItemRequestDtoAnswerFull(x, items);
                 })
                 .collect(Collectors.toList());
-        return answer;
     }
 
     @Transactional
     public ItemRequestDtoAnswerFull getItemRequest(Long userId, Long itemRequestId) {
+        if (!userService.isUserExists(userId)) {
+            throw new NotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
+        }
         ItemRequest request = itemRequestsRepository.findById(itemRequestId)
                 .orElseThrow(() -> new NotFoundException(String.format("Запрос с id = %d не найден", itemRequestId)));
-        List<Item> items = itemRepository.findAllByRequest(request);
+        List<ItemDtoAnswer> items = itemRepository.findAllByRequest(request).stream()
+                .map(e -> itemMapper.toItemDtoAnswer(e, e.getRequest()))
+                .collect(Collectors.toList());
         return itemRequestMapper.toItemRequestDtoAnswerFull(request,
-//                userId,
                 items);
     }
 }

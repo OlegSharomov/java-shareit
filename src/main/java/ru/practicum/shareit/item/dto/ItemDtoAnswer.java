@@ -10,4 +10,5 @@ public class ItemDtoAnswer {
     String name;
     String description;
     Boolean available;
+    Long requestId;
 }

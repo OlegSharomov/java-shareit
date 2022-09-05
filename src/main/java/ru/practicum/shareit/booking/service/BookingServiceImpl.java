@@ -1,6 +1,10 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -99,12 +103,20 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingDtoAnswerFull> getAllBookingsOfUser(Long userId, String state) {
+    public List<BookingDtoAnswerFull> getAllBookingsOfUser(Long userId, String state, Integer from, Integer size) {
+        final LocalDateTime currentTime = LocalDateTime.now();
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
+        if (from == null || size == null) {
+            return collectAllBookingsOfUser(userId, state, currentTime);
+        } else {
+            return collectAllBookingsOfUserWithPages(userId, state, currentTime, from, size);
+        }
+    }
+
+    private List<BookingDtoAnswerFull> collectAllBookingsOfUser(Long userId, String state, LocalDateTime currentTime) {
         List<Booking> bookings;
-        final LocalDateTime currentTime = LocalDateTime.now();
         switch (state.trim().toUpperCase()) {
             case "ALL":
                 bookings = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
@@ -133,9 +145,44 @@ public class BookingServiceImpl implements BookingService {
         return bookings.stream().map(bookingMapper::toBookingDtoAnswerFull).collect(Collectors.toList());
     }
 
+    private List<BookingDtoAnswerFull> collectAllBookingsOfUserWithPages(Long userId, String state,
+                                                                         LocalDateTime currentTime, Integer from,
+                                                                         Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
+        Page<Booking> pages;
+        switch (state.trim().toUpperCase()) {
+            case "ALL":
+                pages = bookingRepository.findAllByBookerId(userId, pageable);
+                break;
+            case "CURRENT":
+                pages = bookingRepository.findAllByBookerIdAndEndAfterAndStartBefore(userId,
+                        currentTime, currentTime, pageable);
+                break;
+            case "PAST":
+                pages = bookingRepository.findAllByBookerIdAndStatusAndEndBefore(userId,
+                        APPROVED, currentTime, pageable);
+                break;
+            case "FUTURE":
+                pages = bookingRepository.findAllByBookerIdAndStartAfter(userId, currentTime, pageable);
+                break;
+            case "WAITING":
+                pages = bookingRepository.findAllByBookerIdAndStatus(userId, WAITING, pageable);
+                break;
+            case "REJECTED":
+                pages = bookingRepository.findAllByBookerIdAndStatus(userId, REJECTED, pageable);
+                break;
+            default:
+                throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        return pages.stream()
+                .map(bookingMapper::toBookingDtoAnswerFull)
+                .collect(Collectors.toList());
+    }
+
     @Override
     @Transactional
-    public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(Long userId, String state) {
+    public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(Long userId, String state, Integer from, Integer size) {
+        final LocalDateTime currentTime = LocalDateTime.now();
         List<Item> items = itemService.getAllEntityItemsOfUserFromStorage(userId);
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
@@ -143,8 +190,16 @@ public class BookingServiceImpl implements BookingService {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
+        if (from == null || size == null) {
+            return collectAllBookingsOfItemsOwner(state, items, currentTime);
+        } else {
+            return collectAllBookingsOfItemsOwnerWithPages(state, items, currentTime, from, size);
+        }
+    }
+
+    private List<BookingDtoAnswerFull> collectAllBookingsOfItemsOwner(String state, List<Item> items,
+                                                                      LocalDateTime currentTime) {
         List<Booking> bookings;
-        final LocalDateTime currentTime = LocalDateTime.now();
         switch (state.trim().toUpperCase()) {
             case "ALL":
                 bookings = bookingRepository.findAllByItemInOrderByStartDesc(items);
@@ -171,6 +226,40 @@ public class BookingServiceImpl implements BookingService {
                 throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookings.stream().map(bookingMapper::toBookingDtoAnswerFull).collect(Collectors.toList());
+    }
+
+    private List<BookingDtoAnswerFull> collectAllBookingsOfItemsOwnerWithPages(String state, List<Item> items,
+                                                                               LocalDateTime currentTime, Integer from,
+                                                                               Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("start").descending());
+        Page<Booking> pages;
+        switch (state.trim().toUpperCase()) {
+            case "ALL":
+                pages = bookingRepository.findAllByItemIn(items, pageable);
+                break;
+            case "CURRENT":
+                pages = bookingRepository.findAllByItemInAndEndAfterAndStartBefore(items, currentTime,
+                        currentTime, pageable);
+                break;
+            case "PAST":
+                pages = bookingRepository.findAllByItemInAndStatusAndEndBefore(items, APPROVED,
+                        currentTime, pageable);
+                break;
+            case "FUTURE":
+                pages = bookingRepository.findAllByItemInAndStartAfter(items, currentTime, pageable);
+                break;
+            case "WAITING":
+                pages = bookingRepository.findAllByItemInAndStatus(items, WAITING, pageable);
+                break;
+            case "REJECTED":
+                pages = bookingRepository.findAllByItemInAndStatus(items, REJECTED, pageable);
+                break;
+            default:
+                throw new UnsupportedStatusException("Unknown state: UNSUPPORTED_STATUS");
+        }
+        return pages.stream()
+                .map(bookingMapper::toBookingDtoAnswerFull)
+                .collect(Collectors.toList());
     }
 
     public boolean isBookingExists(Long bookingId) {
