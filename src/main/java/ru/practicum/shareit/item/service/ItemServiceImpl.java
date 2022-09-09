@@ -47,19 +47,20 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDtoAnswerFull getItemById(Long userId, Long itemId) {
-        Item item = getEntityItemByIdFromStorage(userId, itemId);
-        return collectItemWithBookings(item, userId);
+        checkUserById(userId);
+        Item item = getEntityItemByIdFromStorage(itemId);
+        return collectItemWithBookingsAndComments(item, userId);
     }
 
     @Override
     @Transactional
-    public Item getEntityItemByIdFromStorage(Long userId, Long itemId) {
+    public Item getEntityItemByIdFromStorage(Long itemId) {
         return itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException(String.format("Вещь с переданным id = %d отсутствует в хранилище", itemId)));
     }
 
     @Transactional
-    public ItemDtoAnswerFull collectItemWithBookings(Item item, Long userId) {
+    public ItemDtoAnswerFull collectItemWithBookingsAndComments(Item item, Long userId) {
         List<Comment> comments = commentRepository.findAllByItemId(item.getId());
         List<CommentDto> commentsDto = comments.stream()
                 .map(x -> commentMapper.toCommentDto(x, x.getAuthor()))
@@ -76,8 +77,9 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId) {
+        checkUserById(userId);
         List<Item> items = getAllEntityItemsOfUserFromStorage(userId);
-        return items.stream().map(x -> collectItemWithBookings(x, userId)).collect(Collectors.toList());
+        return items.stream().map(x -> collectItemWithBookingsAndComments(x, userId)).collect(Collectors.toList());
     }
 
     @Override
@@ -89,25 +91,22 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public ItemDtoAnswer createItem(Long userId, ItemDto itemDto) {
+        checkUserById(userId);
         if (itemDto.getId() != null && isItemExists(itemDto.getId())) {
             throw new ValidationException("Данные вещи можно изменять только через метод PATCH");
         }
-        //
-        //
         ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
                     new NotFoundException("Переданный id запроса вещи не найден"));
         }
-//        Item item = itemMapper.toItem(itemDto);
+        if (itemRequest != null && itemRequest.getRequestor().getId().equals(userId)) {
+            throw new ValidationException("Пользователь, создавший запрос не может предлагать для него вещи");
+        }
         Item item = itemMapper.toItem(itemDto, itemRequest);
-        //
-        //
         User owner = userService.getEntityUserByIdFromStorage(userId);
         item.setOwner(owner);
         itemRepository.save(item);
-
-
         return itemMapper.toItemDtoAnswer(item, item.getRequest());
     }
 
@@ -120,8 +119,12 @@ class ItemServiceImpl implements ItemService {
         if (itemDto.getName() != null && itemDto.getName().trim().isEmpty()) {
             throw new ValidationException("Название вещи не должно быть пустым");
         }
-        if (!userService.isUserExists(userId)) {
-            throw new NotFoundException("Пользователь с переданным id не найден");
+        checkUserById(userId);
+        if (itemDto.getRequestId() != null) {
+            if (!itemRequestRepository.existsById(itemDto.getRequestId())) {
+                throw new NotFoundException(
+                        String.format("Переданный id = %d запроса вещи не найден", itemDto.getRequestId()));
+            }
         }
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String
                 .format("Вещь с переданным id = %d не найдена", itemId)));
@@ -143,7 +146,6 @@ class ItemServiceImpl implements ItemService {
         List<Item> items = itemRepository
                 .findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(text, text);
         return items.stream()
-//                .map(itemMapper::toItemDtoAnswer)
                 .map(x -> itemMapper.toItemDtoAnswer(x, x.getRequest()))
                 .collect(Collectors.toList());
     }
@@ -151,9 +153,7 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
-        if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с переданным id = %d не найдена", userId));
-        }
+        checkUserById(userId);
         if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
         }
@@ -176,5 +176,11 @@ class ItemServiceImpl implements ItemService {
 
     public boolean isItemExists(Long itemId) {
         return itemRepository.existsById(itemId);
+    }
+
+    public void checkUserById(Long userId) {
+        if (!userService.isUserExists(userId)) {
+            throw new NotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
+        }
     }
 }

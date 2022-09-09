@@ -50,7 +50,7 @@ public class BookingServiceImpl implements BookingService {
             throw new ValidationException("Дата начала бронирования должна быть раньше даты окончания бронирования");
         }
         Booking booking = bookingMapper.toBooking(bookingDto);
-        Item item = itemService.getEntityItemByIdFromStorage(userId, booking.getItem().getId());
+        Item item = itemService.getEntityItemByIdFromStorage(booking.getItem().getId());
         if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("Запрашиваемая вещь не доступна для бронирования");
         }
@@ -182,6 +182,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(Long userId, String state, Integer from, Integer size) {
+        // проверить существование пользователя
         final LocalDateTime currentTime = LocalDateTime.now();
         List<Item> items = itemService.getAllEntityItemsOfUserFromStorage(userId);
         if (!userService.isUserExists(userId)) {
