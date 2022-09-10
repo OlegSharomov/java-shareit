@@ -34,6 +34,7 @@ import static ru.practicum.shareit.booking.BookingStatus.APPROVED;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+public
 class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final CommentRepository commentRepository;
@@ -120,11 +121,10 @@ class ItemServiceImpl implements ItemService {
             throw new ValidationException("Название вещи не должно быть пустым");
         }
         checkUserById(userId);
+        ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
-            if (!itemRequestRepository.existsById(itemDto.getRequestId())) {
-                throw new NotFoundException(
-                        String.format("Переданный id = %d запроса вещи не найден", itemDto.getRequestId()));
-            }
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> new NotFoundException(
+                        String.format("Переданный id = %d запроса вещи не найден", itemDto.getRequestId())));
         }
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String
                 .format("Вещь с переданным id = %d не найдена", itemId)));
@@ -132,7 +132,7 @@ class ItemServiceImpl implements ItemService {
             throw new OwnerVerificationException("Доступ к редактированию ограничен. " +
                     "Редактировать вещь может только её владелец.");
         }
-        itemMapper.updateItemFromDto(itemDto, item);
+        itemMapper.updateItemFromDto(itemDto, item, itemRequest);
         itemRepository.save(item);
         return itemMapper.toItemDtoAnswer(item, item.getRequest());
     }
@@ -170,8 +170,8 @@ class ItemServiceImpl implements ItemService {
                 .created(LocalDateTime.now())
                 .item(booking.getItem())
                 .build();
-        commentRepository.save(comment);
-        return commentMapper.toCommentDto(comment, comment.getAuthor());
+        Comment answer = commentRepository.save(comment);
+        return commentMapper.toCommentDto(answer, answer.getAuthor());
     }
 
     public boolean isItemExists(Long itemId) {

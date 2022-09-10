@@ -15,6 +15,7 @@ import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.OwnerVerificationException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.comment.Comment;
+import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.comment.CommentMapperImpl;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -32,8 +33,10 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -77,6 +80,10 @@ public class ItemServiceTest {
             .end(LocalDateTime.now().minusDays(1)).item(item1).booker(user2).status(APPROVED).build();
     Booking nextBooking = Booking.builder().id(1L).start(LocalDateTime.now().plusDays(1))
             .end(LocalDateTime.now().plusDays(2)).item(item1).booker(user3).status(APPROVED).build();
+    ItemRequest itemRequest1 = ItemRequest.builder().id(1L).description("Описание запроса вещи1").requestor(user2)
+            .created(LocalDateTime.now().minusDays(5)).build();
+    ItemRequest itemRequest2 = ItemRequest.builder().id(2L).description("Описание запроса вещи2").requestor(user3)
+            .created(LocalDateTime.now().minusDays(5)).build();
 
     // getEntityItemByIdFromStorage
     @Test
@@ -442,7 +449,7 @@ public class ItemServiceTest {
     public void shouldThrowExceptionWhenWeTryUpdateItemWithItemRequestIdAndItemRequestNotExists() {
         ItemDto itemDto = ItemDto.builder().name("item1Update").requestId(1L).build();
         when(userService.isUserExists(1L)).thenReturn(true);
-        when(itemRequestRepository.existsById(1L)).thenReturn(false);
+        when(itemRequestRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.updateItem(1L, 1L, itemDto));
         assertEquals(re.getMessage(), "Переданный id = 1 запроса вещи не найден");
@@ -450,7 +457,7 @@ public class ItemServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenItemNotFound() {
-        ItemDto itemDto = ItemDto.builder().name("item1Update").owner(user1).build();
+        ItemDto itemDto = ItemDto.builder().name("item1Update").build();
         when(userService.isUserExists(1L)).thenReturn(true);
         when(itemRepository.findById(999L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
@@ -460,7 +467,7 @@ public class ItemServiceTest {
 
     @Test
     public void shouldThrowExceptionWhenUserAndOwnerDifferent() {
-        ItemDto itemDto = ItemDto.builder().name("item1Update").owner(user2).build();
+        ItemDto itemDto = ItemDto.builder().name("item1Update").build();
         when(userService.isUserExists(2L)).thenReturn(true);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
         RuntimeException re = Assertions.assertThrows(OwnerVerificationException.class,
@@ -471,7 +478,7 @@ public class ItemServiceTest {
 
     @Test
     public void shouldReturnItemDtoWithDifferentNameWhenWeUpdateName() {
-        ItemDto itemDto = ItemDto.builder().name("item1Update").owner(user2).build();
+        ItemDto itemDto = ItemDto.builder().name("item1Update").build();
         when(userService.isUserExists(1L)).thenReturn(true);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
         ItemDtoAnswer result = itemService.updateItem(1L, 1L, itemDto);
@@ -483,7 +490,7 @@ public class ItemServiceTest {
 
     @Test
     public void shouldReturnItemDtoWithDifferentDescriptionWhenWeUpdateDescription() {
-        ItemDto itemDto = ItemDto.builder().description("descriptionUpdate of item1").owner(user2).build();
+        ItemDto itemDto = ItemDto.builder().description("descriptionUpdate of item1").build();
         when(userService.isUserExists(1L)).thenReturn(true);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
         ItemDtoAnswer result = itemService.updateItem(1L, 1L, itemDto);
@@ -495,7 +502,7 @@ public class ItemServiceTest {
 
     @Test
     public void shouldReturnItemDtoWithDifferentAvailableWhenWeUpdateAvailable() {
-        ItemDto itemDto = ItemDto.builder().available(false).owner(user2).build();
+        ItemDto itemDto = ItemDto.builder().available(false).build();
         when(userService.isUserExists(1L)).thenReturn(true);
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
         ItemDtoAnswer result = itemService.updateItem(1L, 1L, itemDto);
@@ -504,6 +511,97 @@ public class ItemServiceTest {
         Mockito.verify(itemRepository, Mockito.times(1)).save(any(Item.class));
         assertEquals(itemToCheck, result);
     }
+
+    @Test
+    public void shouldReturnItemDtoWithRequestIdAndUpdatedDescriptionWhenWeUpdateDescription() {
+        ItemDto itemDto = ItemDto.builder().description("descriptionUpdate of item1").requestId(1L).build();
+        when(userService.isUserExists(1L)).thenReturn(true);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
+        when(itemRequestRepository.findById(1L)).thenReturn(Optional.of(itemRequest1));
+        ItemDtoAnswer result = itemService.updateItem(1L, 1L, itemDto);
+        ItemDtoAnswer itemToCheck = ItemDtoAnswer.builder().id(1L).name("item1").description("descriptionUpdate of item1")
+                .available(true).requestId(1L).build();
+        Mockito.verify(itemRepository, Mockito.times(1)).save(any(Item.class));
+        assertEquals(itemToCheck, result);
+    }
+
+    @Test
+    public void shouldReturnDtoWithChangedParametersWhenWeUpdateManyParameters() {
+        ItemDto itemDto = ItemDto.builder().id(1L).name("item1Update").description("descriptionUpdate of item1")
+                .available(false).requestId(1L).build();
+        when(userService.isUserExists(1L)).thenReturn(true);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
+        when(itemRequestRepository.findById(1L)).thenReturn(Optional.of(itemRequest1));
+        ItemDtoAnswer result = itemService.updateItem(1L, 1L, itemDto);
+        ItemDtoAnswer itemToCheck = ItemDtoAnswer.builder().id(1L).name("item1Update").description("descriptionUpdate of item1")
+                .available(false).requestId(1L).build();
+        Mockito.verify(itemRepository, Mockito.times(1)).save(any(Item.class));
+        assertEquals(itemToCheck, result);
+    }
+
+    // searchForItemsByQueryText
+    @Test
+    public void shouldReturnEmptyCollectionWhenWeFindByEmptyText() {
+        List<ItemDtoAnswer> result = itemService.searchForItemsByQueryText(" ");
+        assertEquals(Collections.emptyList(), result);
+    }
+
+    @Test
+    public void shouldReturnListDtoWhenWeFindItems() {
+        when(itemRepository
+                .findAllByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIsTrue("item", "item"))
+                .thenReturn(List.of(item1, item2));
+        List<ItemDtoAnswer> result = itemService.searchForItemsByQueryText("item");
+        List<ItemDtoAnswer> listToCheck = List.of(item1, item2).stream()
+                .map(x -> itemMapper.toItemDtoAnswer(x, null)).collect(Collectors.toList());
+        assertEquals(listToCheck, result);
+    }
+
+    // createComment
+    @Test
+    public void shouldThrowExceptionWhenNotExistsUserTryCreateComment() {
+        CommentDto commentDto = CommentDto.builder().text("Хорошая вещь").build();
+        when(userService.isUserExists(999L)).thenReturn(false);
+        RuntimeException re = assertThrows(NotFoundException.class,
+                () -> itemService.createComment(999L, 1L, commentDto));
+        assertEquals(re.getMessage(), "Пользователь с переданным id = 999 не найден");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenUserTryCreateCommentByNotExistsItem() {
+        CommentDto commentDto = CommentDto.builder().text("Хорошая вещь").build();
+        when(userService.isUserExists(1L)).thenReturn(true);
+        when(itemRepository.existsById(999L)).thenReturn(false);
+        RuntimeException re = assertThrows(NotFoundException.class,
+                () -> itemService.createComment(1L, 999L, commentDto));
+        assertEquals(re.getMessage(), "Вещь с переданным id = 999 не найдена");
+    }
+
+    @Test
+    public void should() {
+        LocalDateTime minuteOfToday = LocalDateTime.of(LocalDateTime.now().getYear(), LocalDateTime.now().getMonth(),
+                LocalDateTime.now().getDayOfMonth(), LocalDateTime.now().getHour(), LocalDateTime.now().getMinute());
+        Booking booking1 = Booking.builder().id(1L).start(LocalDateTime.now().minusDays(4))
+                .end(LocalDateTime.now().minusDays(3)).item(item1).booker(user1).status(APPROVED).build();
+        CommentDto commentDto = CommentDto.builder().text("Хорошая вещь").build();
+        Comment comment = Comment.builder().id(1L).text("Хорошая вещь").author(user1).created(minuteOfToday)
+                .item(item1).build();
+        when(userService.isUserExists(1L)).thenReturn(true);
+        when(itemRepository.existsById(1L)).thenReturn(true);
+        when(bookingRepository.findAllByItemIdAndStatusAndEndBefore(eq(1L), eq(APPROVED),
+                any(LocalDateTime.class))).thenReturn(List.of(booking1));
+        when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+        CommentDto result = itemService.createComment(1L, 1L, commentDto);
+        CommentDto commentToCheck = CommentDto.builder().id(1L).text("Хорошая вещь").authorName("user1").created(minuteOfToday).build();
+        assertEquals(commentToCheck, result);
+    }
+
+
+
+
+
+
+
 
 
 

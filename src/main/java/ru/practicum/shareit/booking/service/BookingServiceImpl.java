@@ -49,18 +49,18 @@ public class BookingServiceImpl implements BookingService {
         if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
             throw new ValidationException("Дата начала бронирования должна быть раньше даты окончания бронирования");
         }
-        Booking booking = bookingMapper.toBooking(bookingDto);
-        Item item = itemService.getEntityItemByIdFromStorage(booking.getItem().getId());
+        Item item = itemService.getEntityItemByIdFromStorage(bookingDto.getItemId());
         if (item.getOwner().getId().equals(userId)) {
-            throw new NotFoundException("Запрашиваемая вещь не доступна для бронирования");
+            throw new NotFoundException("Вещи не доступны для бронирования их владельцам");
         }
-        User booker = userService.getEntityUserByIdFromStorage(userId);
-        booking.setBooker(booker);
-        booking.setItem(item);
-        booking.setStatus(WAITING);
         if (!item.getAvailable()) {
             throw new ValidationException("Запрашиваемая вещь не доступна для бронирования");
         }
+        User booker = userService.getEntityUserByIdFromStorage(userId);
+        Booking booking = bookingMapper.toBooking(bookingDto);
+        booking.setBooker(booker);
+        booking.setItem(item);
+        booking.setStatus(WAITING);
         Booking readyBooking = bookingRepository.save(booking);
         return bookingMapper.toBookingDtoAnswer(readyBooking);
     }
@@ -72,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
                 .format("Запрашиваемое бронирование с id = %d не найдено", bookingId)));
         if (!booking.getItem().getOwner().getId().equals(userId)) {
             throw new NotFoundException(String.format("Пользователь с id = %d не может редактировать статус " +
-                    "бронирования для вещи id = %d, т.к. он не является ее хозяином", userId, booking.getItem().getId()));
+                    "бронирования для вещи id = %d, т.к. он не является ее владельцем", userId, booking.getItem().getId()));
         }
         if (booking.getStatus().equals(APPROVED)) {
             throw new ValidationException("Статус бронирования уже подтвержден");
@@ -88,9 +88,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingDtoAnswerFull getBookingById(Long userId, Long bookingId) {
-        if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+        checkExistenceUserById(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String
                 .format("Запрашиваемое бронирование с id = %d не найдено", bookingId)));
         if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner().getId())) {
@@ -105,9 +103,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public List<BookingDtoAnswerFull> getAllBookingsOfUser(Long userId, String state, Integer from, Integer size) {
         final LocalDateTime currentTime = LocalDateTime.now();
-        if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+        checkExistenceUserById(userId);
         if (from == null || size == null) {
             return collectAllBookingsOfUser(userId, state, currentTime);
         } else {
@@ -182,12 +178,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(Long userId, String state, Integer from, Integer size) {
-        // проверить существование пользователя
         final LocalDateTime currentTime = LocalDateTime.now();
         List<Item> items = itemService.getAllEntityItemsOfUserFromStorage(userId);
-        if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
-        }
+        checkExistenceUserById(userId);
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
@@ -261,6 +254,12 @@ public class BookingServiceImpl implements BookingService {
         return pages.stream()
                 .map(bookingMapper::toBookingDtoAnswerFull)
                 .collect(Collectors.toList());
+    }
+
+    public void checkExistenceUserById(Long userId) {
+        if (!userService.isUserExists(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
+        }
     }
 
     public boolean isBookingExists(Long bookingId) {

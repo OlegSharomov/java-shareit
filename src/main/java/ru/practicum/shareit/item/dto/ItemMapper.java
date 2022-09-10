@@ -32,5 +32,8 @@ public interface ItemMapper {
                                           List<CommentDto> comments);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateItemFromDto(ItemDto dto, @MappingTarget Item item);
+    @Mapping(source = "dto.id", target = "id")
+    @Mapping(source = "dto.description", target = "description")
+    @Mapping(source = "itemRequest", target = "request")
+    void updateItemFromDto(ItemDto dto, @MappingTarget Item item, ItemRequest itemRequest);
 }
