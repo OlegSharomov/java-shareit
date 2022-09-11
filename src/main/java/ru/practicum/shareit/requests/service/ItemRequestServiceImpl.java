@@ -41,8 +41,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         User requestor = userService.getEntityUserByIdFromStorage(userId);
         ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto, requestor, createDate);
         itemRequestsRepository.save(itemRequest);
-        return itemRequestMapper.toItemRequestDtoAnswer(itemRequest
-        );
+        return itemRequestMapper.toItemRequestDtoAnswer(itemRequest);
     }
 
     @Override

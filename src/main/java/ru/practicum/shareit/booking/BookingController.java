@@ -16,6 +16,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswer;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswerFull;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.booking.service.SearchStatus;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -73,7 +74,7 @@ public class BookingController {
     public List<BookingDtoAnswerFull>
     getAllBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                          @RequestParam(required = false,
-                                 defaultValue = "ALL") String state,
+                                 defaultValue = "ALL") SearchStatus state,
                          @RequestParam(required = false) @PositiveOrZero(message = "Значение from должно быть " +
                                  "позитивным или 0") Integer from,
                          @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")
@@ -89,7 +90,7 @@ public class BookingController {
     public List<BookingDtoAnswerFull>
     getAllBookingsOfItemsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                @RequestParam(required = false,
-                                       defaultValue = "ALL") String state,
+                                       defaultValue = "ALL") SearchStatus state,
                                @RequestParam(required = false) @PositiveOrZero(message = "Значение from должно быть " +
                                        "позитивным или 0") Integer from,
                                @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")

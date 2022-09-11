@@ -76,16 +76,16 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUnsupportedStatus(final UnsupportedStatusException e) {
+    public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         logMakeNote(e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
+    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         logMakeNote(e);
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
     }
 
     private void logMakeNote(Exception e) {

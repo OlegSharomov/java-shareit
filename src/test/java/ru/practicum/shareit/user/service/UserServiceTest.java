@@ -160,13 +160,13 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldCallDeleteByIdFromRepositoryWhenWeCallDeleteUserById(){
+    public void shouldCallDeleteByIdFromRepositoryWhenWeCallDeleteUserById() {
         userService.deleteUserById(1L);
         Mockito.verify(userRepository, Mockito.times(1)).deleteById(1L);
     }
 
     @Test
-    public void shouldCallExistsByIdFromRepositoryAndReturnTrueWhenWeCallIsUserExists(){
+    public void shouldCallExistsByIdFromRepositoryAndReturnTrueWhenWeCallIsUserExists() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
         boolean answer = userService.isUserExists(1L);
         Mockito.verify(userRepository, Mockito.times(1)).existsById(1L);
@@ -174,7 +174,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldCallExistsByIdFromRepositoryAndReturnFalseWhenWeCallIsUserExists(){
+    public void shouldCallExistsByIdFromRepositoryAndReturnFalseWhenWeCallIsUserExists() {
         Mockito.when(userRepository.existsById(1L)).thenReturn(false);
         boolean answer = userService.isUserExists(1L);
         Mockito.verify(userRepository, Mockito.times(1)).existsById(1L);
