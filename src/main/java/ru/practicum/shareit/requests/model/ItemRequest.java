@@ -2,10 +2,8 @@ package ru.practicum.shareit.requests.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -17,14 +15,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@ToString
 @Entity
 @Table(name = "requests", schema = "public")
 public class ItemRequest {
@@ -40,16 +35,4 @@ public class ItemRequest {
     @Column(name = "created")
     private LocalDateTime created;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ItemRequest that = (ItemRequest) o;
-        return Objects.equals(id, that.id) && Objects.equals(description, that.description) && Objects.equals(requestor, that.requestor) && Objects.equals(created, that.created);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, description, requestor, created);
-    }
 }

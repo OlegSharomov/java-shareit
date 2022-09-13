@@ -119,7 +119,7 @@ public class ItemRequestServiceTest {
     public void shouldThrowExceptionWhenUserNotExists() {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class,
-                () -> itemRequestService.getItemRequest(999L, 1L));
+                () -> itemRequestService.getItemRequestById(999L, 1L));
         assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
     }
 
@@ -128,7 +128,7 @@ public class ItemRequestServiceTest {
         when(userService.isUserExists(1L)).thenReturn(true);
         when(itemRequestsRepository.findById(999L)).thenReturn(Optional.empty());
         RuntimeException re = assertThrows(NotFoundException.class,
-                () -> itemRequestService.getItemRequest(1L, 999L));
+                () -> itemRequestService.getItemRequestById(1L, 999L));
         assertEquals("Запрос с id = 999 не найден", re.getMessage());
     }
 
@@ -137,7 +137,7 @@ public class ItemRequestServiceTest {
         when(userService.isUserExists(1L)).thenReturn(true);
         when(itemRequestsRepository.findById(2L)).thenReturn(Optional.of(itemRequest2));
         when(itemRepository.findAllByRequest(itemRequest2)).thenReturn(List.of(item1));
-        ItemRequestDtoAnswerFull result = itemRequestService.getItemRequest(1L, 2L);
+        ItemRequestDtoAnswerFull result = itemRequestService.getItemRequestById(1L, 2L);
         assertEquals(itemRequestDtoAnswerFull2, result);
     }
 }

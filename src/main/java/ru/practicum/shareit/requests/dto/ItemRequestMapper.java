@@ -16,8 +16,7 @@ public interface ItemRequestMapper {
     @Mapping(target = "requestor", source = "requestor")
     ItemRequest toItemRequest(ItemRequestDto itemRequestDto, User requestor, LocalDateTime created);
 
-    ItemRequestDtoAnswer toItemRequestDtoAnswer(ItemRequest itemRequest
-    );
+    ItemRequestDtoAnswer toItemRequestDtoAnswer(ItemRequest itemRequest);
 
     @Mapping(target = "id", source = "itemRequest.id")
     @Mapping(target = "items", source = "items")

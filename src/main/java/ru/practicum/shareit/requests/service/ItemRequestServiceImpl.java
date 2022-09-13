@@ -81,7 +81,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     @Transactional
-    public ItemRequestDtoAnswerFull getItemRequest(Long userId, Long itemRequestId) {
+    public ItemRequestDtoAnswerFull getItemRequestById(Long userId, Long itemRequestId) {
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
         }

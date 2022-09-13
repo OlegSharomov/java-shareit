@@ -58,7 +58,7 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDtoAnswerFull>
     getAllItemRequestsByParams(@RequestHeader("X-Sharer-User-Id") Long userId,
-                               @RequestParam(required = false) @PositiveOrZero(message = "Значение from должно быть " +
+                               @RequestParam(required = false) @Valid @PositiveOrZero(message = "Значение from должно быть " +
                                        "позитивным или 0") Integer from,
                                @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")
                                Integer size) {
@@ -70,10 +70,10 @@ public class ItemRequestController {
     /*GET /requests/{requestId} — получить данные об одном конкретном запросе вместе с данными об ответах на него
     в том же формате, что и в эндпоинте GET /requests. Посмотреть данные об отдельном запросе может любой пользователь.*/
     @GetMapping("/{requestId}")
-    public ItemRequestDtoAnswerFull getItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                   @PathVariable Long requestId) {
+    public ItemRequestDtoAnswerFull getItemRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                       @PathVariable Long requestId) {
         log.info("Получен запрос GET/requests/{requestId} от пользователя id = {} " +
                 "на получение запроса id = {}", userId, requestId);
-        return itemRequestService.getItemRequest(userId, requestId);
+        return itemRequestService.getItemRequestById(userId, requestId);
     }
 }

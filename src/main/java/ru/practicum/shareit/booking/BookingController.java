@@ -46,7 +46,6 @@ public class BookingController {
     Затем статус бронирования становится либо APPROVED, либо REJECTED.*/
     @PatchMapping("/{bookingId}")
     public BookingDtoAnswerFull changeRequestStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                    @NotNull(message = "Переменная bookingId должна быть заполнена")
                                                     @PathVariable("bookingId") Long bookingId,
                                                     @NotNull @RequestParam("approved") Boolean approved) {
         log.info("Получен запрос PATCH/bookings/{bookingId}?approved={approved} от пользователя id = {} " +
@@ -80,7 +79,7 @@ public class BookingController {
                          @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")
                          Integer size) {
         log.info("Получен запрос GET/bookings?state={state} от пользователя id = {} " +
-                "на просмотр бронирований со статусом: {}", userId, state);
+                "на просмотр бронирований со статусом: {}, страницы: от{} до {}", userId, state, from, size);
         return bookingService.getAllBookingsOfUser(userId, state, from, size);
     }
 
@@ -95,6 +94,8 @@ public class BookingController {
                                        "позитивным или 0") Integer from,
                                @RequestParam(required = false) @Positive(message = "Значение size должно быть позитивным")
                                Integer size) {
+        log.info("Получен запрос GET/bookings/owner?state={state} от пользователя id = {} " +
+                "на просмотр бронирований со статусом: {}, страницы: от{} до {}", userId, state, from, size);
         return bookingService.getAllBookingsOfItemsOwner(userId, state, from, size);
     }
 }

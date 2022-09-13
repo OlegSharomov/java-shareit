@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 public class BookingDto {
     Long id;
     @NotNull
-    @Future(message = "дата начала бронирования указана в прошлом")
+    @Future(message = "Дата начала бронирования указана в прошлом")
     LocalDateTime start;
     @NotNull
-    @Future(message = "дата окончания бронирования указана в прошлом")
+    @Future(message = "Дата окончания бронирования указана в прошлом")
     LocalDateTime end;
     Long itemId;
     User booker;    // пользователь, который осуществляет бронирование
