@@ -147,6 +147,7 @@
                         <failOnViolation>true</failOnViolation>
                         <logViolationsToConsole>true</logViolationsToConsole>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <excludes>**/generated/**/*</excludes>
                     </configuration>
                     <executions>
                         <execution>
