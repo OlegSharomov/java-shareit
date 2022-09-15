@@ -74,7 +74,7 @@ public class BookingServiceTest {
         when(bookingRepository.existsById(1L)).thenReturn(true);
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals( "Данные бронирования можно изменять только через метод PATCH", re.getMessage());
+        Assertions.assertEquals("Данные бронирования можно изменять только через метод PATCH", re.getMessage());
     }
 
     @Test

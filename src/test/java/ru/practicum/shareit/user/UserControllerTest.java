@@ -134,7 +134,6 @@ public class UserControllerTest {
     }
 
 
-
     // updateUser
     @Test
     public void shouldReturnUpdatedUserDtoAnswerWhenWeChangeAllFieldsOfUser() throws Exception {
