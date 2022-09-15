@@ -74,7 +74,7 @@ public class BookingServiceTest {
         when(bookingRepository.existsById(1L)).thenReturn(true);
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals(re.getMessage(), "Данные бронирования можно изменять только через метод PATCH");
+        Assertions.assertEquals( "Данные бронирования можно изменять только через метод PATCH", re.getMessage());
     }
 
     @Test
@@ -83,8 +83,8 @@ public class BookingServiceTest {
                 .end(minuteOfToday.minusDays(2)).build();
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals(re.getMessage(),
-                "Дата начала бронирования должна быть раньше даты окончания бронирования");
+        Assertions.assertEquals("Дата начала бронирования должна быть раньше даты окончания бронирования",
+                re.getMessage());
     }
 
     @Test
@@ -94,7 +94,7 @@ public class BookingServiceTest {
         when(itemService.getEntityItemByIdFromStorage(1L)).thenReturn(item1);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.createBooking(3L, bookingDto1));
-        Assertions.assertEquals(re.getMessage(), "Вещи не доступны для бронирования их владельцам");
+        Assertions.assertEquals("Вещи не доступны для бронирования их владельцам", re.getMessage());
     }
 
     @Test
@@ -106,7 +106,7 @@ public class BookingServiceTest {
         when(itemService.getEntityItemByIdFromStorage(1L)).thenReturn(itemUnavailable);
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals(re.getMessage(), "Запрашиваемая вещь не доступна для бронирования");
+        Assertions.assertEquals("Запрашиваемая вещь не доступна для бронирования", re.getMessage());
     }
 
     @Test

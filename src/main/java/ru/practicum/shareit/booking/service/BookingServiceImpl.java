@@ -76,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getStatus().equals(APPROVED)) {
             throw new ValidationException("Статус бронирования уже подтвержден");
         }
-        if (approved) {
+        if (Boolean.TRUE.equals(approved)) {
             booking.setStatus(APPROVED);
         } else {
             booking.setStatus(REJECTED);

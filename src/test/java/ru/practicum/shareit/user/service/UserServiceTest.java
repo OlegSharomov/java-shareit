@@ -49,23 +49,23 @@ public class UserServiceTest {
     @Test
     public void shouldReturnListDtoWhenWeGetAllUsers() {
         when(userRepository.findAll()).thenReturn(List.of(user1, user2));
-        List<UserDtoAnswer> usersDto = userService.getAllUsers();
-        assertEquals(usersDto, List.of(userMapper.toUserDtoAnswer(user1), userMapper.toUserDtoAnswer(user2)));
+        List<UserDtoAnswer> result = userService.getAllUsers();
+        assertEquals(List.of(userMapper.toUserDtoAnswer(user1), userMapper.toUserDtoAnswer(user2)), result);
     }
 
     @Test
     public void shouldReturnEmptyListWhenWeGetAllUsersFromEmptyRepository() {
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
-        List<UserDtoAnswer> usersDto = userService.getAllUsers();
-        assertEquals(usersDto, Collections.emptyList());
+        List<UserDtoAnswer> result = userService.getAllUsers();
+        assertEquals(Collections.emptyList(), result);
     }
 
     // getUserById
     @Test
     public void shouldReturnUserDtoWhenWeGetUserById() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
-        UserDtoAnswer userDtoAnswer = userService.getUserById(1L);
-        assertEquals(userDtoAnswer, userMapper.toUserDtoAnswer(user1));
+        UserDtoAnswer result = userService.getUserById(1L);
+        assertEquals(userMapper.toUserDtoAnswer(user1), result);
     }
 
     @Test
@@ -77,8 +77,8 @@ public class UserServiceTest {
     @Test
     public void shouldReturnUserWhenUserExist() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
-        User user = userService.getEntityUserByIdFromStorage(1L);
-        assertEquals(user, user1);
+        User result = userService.getEntityUserByIdFromStorage(1L);
+        assertEquals(user1, result);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(1L).name("user1").email("user1@mail.ru").build();
         when(userRepository.save(user1)).thenReturn(user1);
         UserDtoAnswer result = userService.createUser(userDto);
-        assertEquals(result, userMapper.toUserDtoAnswer(user1));
+        assertEquals(userMapper.toUserDtoAnswer(user1), result);
     }
 
     // updateUser
@@ -109,8 +109,8 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(1L).name("user1Update").email("user1@mail.ru").build();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         UserDtoAnswer result = userService.updateUser(1L, userDto);
-        assertEquals(result, userMapper.toUserDtoAnswer(
-                User.builder().id(1L).name("user1Update").email("user1@mail.ru").build()));
+        assertEquals(userMapper.toUserDtoAnswer(
+                User.builder().id(1L).name("user1Update").email("user1@mail.ru").build()), result);
     }
 
     @Test
@@ -118,8 +118,8 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(1L).name("user1").email("user1Update@mail.ru").build();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         UserDtoAnswer result = userService.updateUser(1L, userDto);
-        assertEquals(result, userMapper.toUserDtoAnswer(
-                User.builder().id(1L).name("user1").email("user1Update@mail.ru").build()));
+        assertEquals(userMapper.toUserDtoAnswer(
+                User.builder().id(1L).name("user1").email("user1Update@mail.ru").build()), result);
     }
 
     @Test
@@ -127,8 +127,8 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(1L).name("user1Update").email("user1Update@mail.ru").build();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         UserDtoAnswer result = userService.updateUser(1L, userDto);
-        assertEquals(result, userMapper.toUserDtoAnswer(
-                User.builder().id(1L).name("user1Update").email("user1Update@mail.ru").build()));
+        assertEquals(userMapper.toUserDtoAnswer(
+                User.builder().id(1L).name("user1Update").email("user1Update@mail.ru").build()), result);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(2L).name("user1Update").email("user1Update@mail.ru").build();
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> userService.updateUser(1L, userDto));
-        assertEquals(re.getMessage(), "Нельзя изменять id пользователя");
+        assertEquals("Нельзя изменять id пользователя", re.getMessage());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(1L).name(" ").email("user1Update@mail.ru").build();
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> userService.updateUser(1L, userDto));
-        assertEquals(re.getMessage(), "Поле name должно быть заполнено");
+        assertEquals("Поле name должно быть заполнено", re.getMessage());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class UserServiceTest {
         UserDto userDto = UserDto.builder().id(1L).name("user1Update").email(" ").build();
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> userService.updateUser(1L, userDto));
-        assertEquals(re.getMessage(), "Поле email должно быть заполнено");
+        assertEquals("Поле email должно быть заполнено", re.getMessage());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class UserServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> userService.updateUser(1L, userDto));
-        assertEquals(re.getMessage(), "Пользователь с переданным id не найден");
+        assertEquals("Пользователь с переданным id не найден", re.getMessage());
     }
 
     // deleteUserById

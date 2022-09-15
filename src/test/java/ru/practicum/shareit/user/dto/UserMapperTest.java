@@ -17,7 +17,7 @@ public class UserMapperTest {
         UserDto userDto = UserDto.builder().id(1L).name("user1").email("user1@mail.ru").build();
         User user = User.builder().id(1L).name("user1").email("user1@mail.ru").build();
         User result = userMapper.toUser(userDto);
-        Assertions.assertEquals(result, user);
+        Assertions.assertEquals(user, result);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class UserMapperTest {
         UserDtoAnswer userDtoAnswer = UserDtoAnswer.builder().id(1L).name("user1").email("user1@mail.ru").build();
         User user = User.builder().id(1L).name("user1").email("user1@mail.ru").build();
         UserDtoAnswer result = userMapper.toUserDtoAnswer(user);
-        Assertions.assertEquals(result, userDtoAnswer);
+        Assertions.assertEquals(userDtoAnswer, result);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class UserMapperTest {
         User result = User.builder().id(1L).name("user1").email("user1@mail.ru").build();
         userMapper.updateUserFromDto(userDtoFromRequest, result);
         User userForCheck = User.builder().id(1L).name("user1Update").email("user1@mail.ru").build();
-        Assertions.assertEquals(result, userForCheck);
+        Assertions.assertEquals(userForCheck, result);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class UserMapperTest {
         User result = User.builder().id(1L).name("user1").email("user1@mail.ru").build();
         userMapper.updateUserFromDto(userDtoFromRequest, result);
         User userForCheck = User.builder().id(1L).name("user1").email("user1Update@mail.ru").build();
-        Assertions.assertEquals(result, userForCheck);
+        Assertions.assertEquals(userForCheck, result);
     }
 
 

@@ -90,7 +90,7 @@ public class ItemServiceTest {
     public void shouldReturnEntityWhenEntityExists() {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
         Item item = itemService.getEntityItemByIdFromStorage(1L);
-        assertEquals(item, item1);
+        assertEquals(item1, item);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ItemServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.getEntityItemByIdFromStorage(1L));
-        assertEquals(re.getMessage(), "Вещь с переданным id = 1 отсутствует в хранилище");
+        assertEquals("Вещь с переданным id = 1 отсутствует в хранилище", re.getMessage());
     }
 
     // collectItemWithBookingsAndComments
@@ -213,7 +213,7 @@ public class ItemServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.getItemById(999L, 1L));
-        assertEquals(re.getMessage(), "Пользователь с переданным id = 999 не найден");
+        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class ItemServiceTest {
         when(itemRepository.findById(999L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.getItemById(1L, 999L));
-        assertEquals(re.getMessage(), "Вещь с переданным id = 999 отсутствует в хранилище");
+        assertEquals("Вещь с переданным id = 999 отсутствует в хранилище", re.getMessage());
     }
 
     @Test
@@ -282,7 +282,7 @@ public class ItemServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.getAllItemsOfUser(999L));
-        assertEquals(re.getMessage(), "Пользователь с переданным id = 999 не найден");
+        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
     }
 
     @Test
@@ -347,7 +347,7 @@ public class ItemServiceTest {
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.createItem(999L, ItemDto.builder()
                         .name("item1").description("description of item1").available(true).build()));
-        assertEquals(re.getMessage(), "Пользователь с переданным id = 999 не найден");
+        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class ItemServiceTest {
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> itemService.createItem(1L, ItemDto.builder()
                         .id(1L).name("item1Update").description("descriptionUpdate of item1").available(true).build()));
-        assertEquals(re.getMessage(), "Данные вещи можно изменять только через метод PATCH");
+        assertEquals("Данные вещи можно изменять только через метод PATCH", re.getMessage());
     }
 
     @Test
@@ -369,7 +369,7 @@ public class ItemServiceTest {
         when(itemRequestRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.createItem(1L, itemDto));
-        assertEquals(re.getMessage(), "Переданный id запроса вещи не найден");
+        assertEquals("Переданный id запроса вещи не найден", re.getMessage());
     }
 
     @Test
@@ -384,7 +384,7 @@ public class ItemServiceTest {
                         .created(LocalDateTime.now().minusDays(3)).build()));
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> itemService.createItem(1L, itemDto));
-        assertEquals(re.getMessage(), "Пользователь, создавший запрос не может предлагать для него вещи");
+        assertEquals("Пользователь, создавший запрос не может предлагать для него вещи", re.getMessage());
     }
 
 
@@ -425,7 +425,7 @@ public class ItemServiceTest {
         ItemDto itemDto = ItemDto.builder().id(99L).build();
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> itemService.updateItem(1L, 1L, itemDto));
-        assertEquals(re.getMessage(), "Id вещи изменять нельзя");
+        assertEquals("Id вещи изменять нельзя", re.getMessage());
     }
 
     @Test
@@ -433,7 +433,7 @@ public class ItemServiceTest {
         ItemDto itemDto = ItemDto.builder().name(" ").owner(user1).build();
         RuntimeException re = Assertions.assertThrows(ValidationException.class,
                 () -> itemService.updateItem(1L, 1L, itemDto));
-        assertEquals(re.getMessage(), "Название вещи не должно быть пустым");
+        assertEquals("Название вещи не должно быть пустым", re.getMessage());
     }
 
     @Test
@@ -442,7 +442,7 @@ public class ItemServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.updateItem(999L, 1L, itemDto));
-        assertEquals(re.getMessage(), "Пользователь с переданным id = 999 не найден");
+        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
     }
 
     @Test
@@ -452,7 +452,7 @@ public class ItemServiceTest {
         when(itemRequestRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.updateItem(1L, 1L, itemDto));
-        assertEquals(re.getMessage(), "Переданный id = 1 запроса вещи не найден");
+        assertEquals("Переданный id = 1 запроса вещи не найден", re.getMessage());
     }
 
     @Test
@@ -462,7 +462,7 @@ public class ItemServiceTest {
         when(itemRepository.findById(999L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> itemService.updateItem(1L, 999L, itemDto));
-        assertEquals(re.getMessage(), "Вещь с переданным id = 999 не найдена");
+        assertEquals("Вещь с переданным id = 999 не найдена", re.getMessage());
     }
 
     @Test
@@ -472,8 +472,8 @@ public class ItemServiceTest {
         when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));
         RuntimeException re = Assertions.assertThrows(OwnerVerificationException.class,
                 () -> itemService.updateItem(2L, 1L, itemDto));
-        assertEquals(re.getMessage(), "Доступ к редактированию ограничен. " +
-                "Редактировать вещь может только её владелец.");
+        assertEquals("Доступ к редактированию ограничен. " +
+                "Редактировать вещь может только её владелец.", re.getMessage());
     }
 
     @Test
@@ -564,7 +564,7 @@ public class ItemServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> itemService.createComment(999L, 1L, commentDto));
-        assertEquals(re.getMessage(), "Пользователь с переданным id = 999 не найден");
+        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
     }
 
     @Test
@@ -574,7 +574,7 @@ public class ItemServiceTest {
         when(itemRepository.existsById(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> itemService.createComment(1L, 999L, commentDto));
-        assertEquals(re.getMessage(), "Вещь с переданным id = 999 не найдена");
+        assertEquals("Вещь с переданным id = 999 не найдена", re.getMessage());
     }
 
     @Test
@@ -595,14 +595,4 @@ public class ItemServiceTest {
         CommentDto commentToCheck = CommentDto.builder().id(1L).text("Хорошая вещь").authorName("user1").created(minuteOfToday).build();
         assertEquals(commentToCheck, result);
     }
-
-
-
-
-
-
-
-
-
-
 }
