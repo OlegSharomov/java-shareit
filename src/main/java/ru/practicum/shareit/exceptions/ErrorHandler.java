@@ -1,7 +1,6 @@
 package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -68,7 +67,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
+    public ErrorResponse handleConstraintViolationException(final org.hibernate.exception.ConstraintViolationException e) {
         logMakeNote(e);
         return new ErrorResponse("Произошла ошибка. Попытка создать объект с уникальным элементом, " +
                 "который уже существует в Базе Данных");
@@ -76,9 +75,10 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUnsupportedStatus(final UnsupportedStatusException e) {
+    public ErrorResponse handleConstraintViolationException(final javax.validation.ConstraintViolationException e) {
         logMakeNote(e);
-        return new ErrorResponse(e.getMessage());
+        return new ErrorResponse(String.format("Произошла ошибка. %s",
+                e.getConstraintViolations().iterator().next().getMessage()));
     }
 
     @ExceptionHandler
@@ -88,7 +88,14 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
+        logMakeNote(e);
+        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
+    }
+
     private void logMakeNote(Exception e) {
-        log.warn("При обработке запроса произошла ошибка: '{}'", e.getMessage());
+        log.warn("При обработке запроса произошла ошибка: '{}', '{}'", e.getMessage(), e.getStackTrace());
     }
 }

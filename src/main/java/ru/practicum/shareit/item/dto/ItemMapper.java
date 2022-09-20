@@ -8,14 +8,21 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.practicum.shareit.booking.dto.BookingDtoWithBookerId;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.requests.model.ItemRequest;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
-    Item toItem(ItemDto itemDto);
+    @Mapping(target = "id", source = "itemDto.id")
+    @Mapping(target = "description", source = "itemDto.description")
+    @Mapping(target = "request", source = "itemRequest")
+    Item toItem(ItemDto itemDto, ItemRequest itemRequest);
 
-    ItemDtoAnswer toItemDtoAnswer(Item item);
+    @Mapping(target = "id", source = "item.id")
+    @Mapping(target = "description", source = "item.description")
+    @Mapping(target = "requestId", source = "request.id")
+    ItemDtoAnswer toItemDtoAnswer(Item item, ItemRequest request);
 
     @Mapping(source = "item.id", target = "id")
     @Mapping(source = "last", target = "lastBooking")
@@ -25,5 +32,8 @@ public interface ItemMapper {
                                           List<CommentDto> comments);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateItemFromDto(ItemDto dto, @MappingTarget Item item);
+    @Mapping(source = "dto.id", target = "id")
+    @Mapping(source = "dto.description", target = "description")
+    @Mapping(source = "itemRequest", target = "request")
+    void updateItemFromDto(ItemDto dto, @MappingTarget Item item, ItemRequest itemRequest);
 }

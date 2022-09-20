@@ -14,7 +14,7 @@ public interface ItemService {
     ItemDtoAnswerFull getItemById(Long userId, Long itemId);
 
     // получение сущности БД из хранилища
-    Item getEntityItemByIdFromStorage(Long userId, Long itemId);
+    Item getEntityItemByIdFromStorage(Long itemId);
 
     // получение списка вещей для контроллера
     List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId);

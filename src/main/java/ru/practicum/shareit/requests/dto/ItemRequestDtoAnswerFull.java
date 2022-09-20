@@ -4,19 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.item.dto.ItemDtoAnswer;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemRequestDto {
+public class ItemRequestDtoAnswerFull {
     private Long id;
-    @NotBlank(message = "Поле с описанием запроса должно быть заполнено")
     private String description;
-    private User requestor;
     private LocalDateTime created;
+    private List<ItemDtoAnswer> items;
 }

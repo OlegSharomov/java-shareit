@@ -2,10 +2,9 @@ package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-import ru.practicum.shareit.requests.ItemRequest;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.requests.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.Column;
@@ -16,13 +15,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Objects;
 
-@AllArgsConstructor
+@Data
 @Builder
-@Getter
-@Setter
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "items", schema = "public")
 public class Item {
@@ -43,27 +40,4 @@ public class Item {
     @JoinColumn(name = "request_id")
     private ItemRequest request;
 
-    public Item() {
-    }
-
-    public Item(String name, String description, Boolean available, User owner, ItemRequest request) {
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.owner = owner;
-        this.request = request;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return Objects.equals(id, item.id) && Objects.equals(name, item.name) && Objects.equals(description, item.description) && Objects.equals(available, item.available) && Objects.equals(owner, item.owner) && Objects.equals(request, item.request);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, description, available, owner, request);
-    }
 }
