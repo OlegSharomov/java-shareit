@@ -443,7 +443,7 @@ CREATE TYPE BOOKING_STATUS AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
-	at ru.practicum.shareit.ShareItApp.main(ShareItApp.java:10)
+	at ru.practicum.shareit.ShareItServer.main(ShareItApp.java:10)
 2022-08-15 23:08:33 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Domain "BOOKING_STATUS" already exists; SQL statement:
 CREATE TYPE BOOKING_STATUS AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED') [90119-214]
@@ -487,7 +487,7 @@ CREATE TYPE BOOKING_STATUS AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
-	at ru.practicum.shareit.ShareItApp.main(ShareItApp.java:10)
+	at ru.practicum.shareit.ShareItServer.main(ShareItApp.java:10)
 2022-08-15 23:09:34 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Domain "BOOKING_STATUS" already exists; SQL statement:
 CREATE TYPE BOOKING_STATUS AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED') [90119-214]
@@ -531,7 +531,7 @@ CREATE TYPE BOOKING_STATUS AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
-	at ru.practicum.shareit.ShareItApp.main(ShareItApp.java:10)
+	at ru.practicum.shareit.ShareItServer.main(ShareItApp.java:10)
 2022-08-15 20:11:30 jdbc[3]: exception
 java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supported.
 	at org.h2.jdbc.JdbcConnection.setClientInfo(JdbcConnection.java:1573)
@@ -662,7 +662,7 @@ CREATE TYPE BOOKING_STATUS AS ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
-	at ru.practicum.shareit.ShareItApp.main(ShareItApp.java:10)
+	at ru.practicum.shareit.ShareItServer.main(ShareItApp.java:10)
 2022-08-15 20:14:40 jdbc[3]: exception
 java.sql.SQLClientInfoException: Client info name 'ApplicationName' not supported.
 	at org.h2.jdbc.JdbcConnection.setClientInfo(JdbcConnection.java:1573)
