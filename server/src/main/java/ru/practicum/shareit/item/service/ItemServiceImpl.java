@@ -48,7 +48,7 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemDtoAnswerFull getItemById(Long userId, Long itemId) {
-        checkUserById(userId);
+        checkExistenceUserInRepositoryById(userId);
         Item item = getEntityItemByIdFromStorage(itemId);
         return collectItemWithBookingsAndComments(item, userId);
     }
@@ -78,7 +78,7 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId) {
-        checkUserById(userId);
+        checkExistenceUserInRepositoryById(userId);
         List<Item> items = getAllEntityItemsOfUserFromStorage(userId);
         return items.stream().map(x -> collectItemWithBookingsAndComments(x, userId)).collect(Collectors.toList());
     }
@@ -92,8 +92,8 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public ItemDtoAnswer createItem(Long userId, ItemDto itemDto) {
-        checkUserById(userId);
-        if (itemDto.getId() != null && isItemExists(itemDto.getId())) {
+        checkExistenceUserInRepositoryById(userId);
+        if (itemDto.getId() != null && Boolean.TRUE.equals(isItemExists(itemDto.getId()))) {
             throw new ValidationException("Данные вещи можно изменять только через метод PATCH");
         }
         ItemRequest itemRequest = null;
@@ -114,13 +114,7 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public ItemDtoAnswer updateItem(Long userId, Long itemId, ItemDto itemDto) {
-        if (itemDto.getId() != null && !itemDto.getId().equals(itemId)) {
-            throw new ValidationException("Id вещи изменять нельзя");
-        }
-        if (itemDto.getName() != null && itemDto.getName().trim().isEmpty()) {
-            throw new ValidationException("Название вещи не должно быть пустым");
-        }
-        checkUserById(userId);
+        checkExistenceUserInRepositoryById(userId);
         ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> new NotFoundException(
@@ -153,7 +147,7 @@ class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = false)
     public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
-        checkUserById(userId);
+        checkExistenceUserInRepositoryById(userId);
         if (!itemRepository.existsById(itemId)) {
             throw new NotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
         }
@@ -178,7 +172,7 @@ class ItemServiceImpl implements ItemService {
         return itemRepository.existsById(itemId);
     }
 
-    public void checkUserById(Long userId) {
+    public void checkExistenceUserInRepositoryById(Long userId) {
         if (!userService.isUserExists(userId)) {
             throw new NotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
         }
