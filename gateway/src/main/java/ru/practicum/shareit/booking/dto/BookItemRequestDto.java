@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookItemRequestDto {
 	private long itemId;
-	@FutureOrPresent
+	@FutureOrPresent(message = "'start' cannot be in the past")
 	private LocalDateTime start;
-	@Future
+	@Future(message = "'end' cannot be in the past or present")
 	private LocalDateTime end;
 }

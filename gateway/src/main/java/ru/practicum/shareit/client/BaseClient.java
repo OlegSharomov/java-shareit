@@ -86,7 +86,10 @@ public class BaseClient {
 
         ResponseEntity<Object> shareitServerResponse;
         try {
+            log.warn("Подготавливаем запрос: {}", requestEntity);
             if (parameters != null) {
+                log.warn("Отправляем запрос с параметрами: : Путь {},\n Метод {},\n сам запрос {},\n параметры {}",
+                        path, method, requestEntity, parameters);
                 shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
             } else {
                 shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class);

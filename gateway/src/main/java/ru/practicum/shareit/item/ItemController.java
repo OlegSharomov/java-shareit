@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemReqDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -42,7 +42,8 @@ public class ItemController {
     @GetMapping
     public ResponseEntity<Object> getAllItemsOfUser(@NotNull(message = "The X-Sharer-User-Id is missing")
                                                     @Positive(message = "id must be positive")
-                                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                    @RequestHeader("X-Sharer-User-Id") Long userId
+    ) {
         log.info("Получен запрос GET/items от пользователя id = {}", userId);
         return itemClient.getAllItemsOfUser(userId);
     }
@@ -51,7 +52,7 @@ public class ItemController {
     public ResponseEntity<Object> createItem(@NotNull(message = "The X-Sharer-User-Id is missing")
                                              @Positive(message = "id must be positive")
                                              @RequestHeader("X-Sharer-User-Id") Long userId,
-                                             @Valid @RequestBody ItemRequestDto itemDto) {
+                                             @Valid @RequestBody ItemReqDto itemDto) {
         log.info("Получен запрос POST/items от пользователя id = {} с переданным телом: {}", userId, itemDto);
         return itemClient.createItem(userId, itemDto);
     }
@@ -62,7 +63,7 @@ public class ItemController {
                                              @RequestHeader("X-Sharer-User-Id") Long userId,
                                              @Positive(message = "id must be positive")
                                              @PathVariable Long itemId,
-                                             @RequestBody ItemRequestDto itemDto) {
+                                             @RequestBody ItemReqDto itemDto) {
         log.info("Получен запрос PATCH/items от пользователя id = {} для изменения вещи id = {} с переданным телом: {}",
                 userId, itemId, itemDto);
         if (itemDto.getId() != null && !itemDto.getId().equals(itemId)) {

@@ -70,25 +70,25 @@ public class ItemControllerTest {
     }
 
     // getAllItemsOfUser
-    @Test
-    public void shouldReturnListOfItemDtoAnswerFull() throws Exception {
-        Mockito.when(itemService.getAllItemsOfUser(1L)).thenReturn(List.of(itemDtoAnswerFull1, itemDtoAnswerFull2));
-        mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", "1")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id", is(itemDtoAnswerFull1.getId()), Long.class))
-                .andExpect(jsonPath("$[0].name", is(itemDtoAnswerFull1.getName()), String.class))
-                .andExpect(jsonPath("$[0].description", is(itemDtoAnswerFull1.getDescription()), String.class))
-                .andExpect(jsonPath("$[0].available", is(itemDtoAnswerFull1.getAvailable()), Boolean.class))
-                .andExpect(jsonPath("$[1].id", is(itemDtoAnswerFull2.getId()), Long.class))
-                .andExpect(jsonPath("$[1].name", is(itemDtoAnswerFull2.getName()), String.class))
-                .andExpect(jsonPath("$[1].description", is(itemDtoAnswerFull2.getDescription()), String.class))
-                .andExpect(jsonPath("$[1].available", is(itemDtoAnswerFull2.getAvailable()), Boolean.class));
-    }
+//    @Test
+//    public void shouldReturnListOfItemDtoAnswerFull() throws Exception {
+//        Mockito.when(itemService.getAllItemsOfUser(1L)).thenReturn(List.of(itemDtoAnswerFull1, itemDtoAnswerFull2));
+//        mockMvc.perform(get("/items")
+//                        .header("X-Sharer-User-Id", "1")
+//                        .characterEncoding(StandardCharsets.UTF_8)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$[0].id", is(itemDtoAnswerFull1.getId()), Long.class))
+//                .andExpect(jsonPath("$[0].name", is(itemDtoAnswerFull1.getName()), String.class))
+//                .andExpect(jsonPath("$[0].description", is(itemDtoAnswerFull1.getDescription()), String.class))
+//                .andExpect(jsonPath("$[0].available", is(itemDtoAnswerFull1.getAvailable()), Boolean.class))
+//                .andExpect(jsonPath("$[1].id", is(itemDtoAnswerFull2.getId()), Long.class))
+//                .andExpect(jsonPath("$[1].name", is(itemDtoAnswerFull2.getName()), String.class))
+//                .andExpect(jsonPath("$[1].description", is(itemDtoAnswerFull2.getDescription()), String.class))
+//                .andExpect(jsonPath("$[1].available", is(itemDtoAnswerFull2.getAvailable()), Boolean.class));
+//    }
 
     // createItem
     @Test

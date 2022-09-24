@@ -2,6 +2,8 @@ package ru.practicum.shareit.requests;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,34 +12,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.requests.dto.ItemRequestDto;
-import ru.practicum.shareit.requests.dto.ItemRequestDtoAnswer;
-import ru.practicum.shareit.requests.dto.ItemRequestDtoAnswerFull;
-import ru.practicum.shareit.requests.service.ItemRequestService;
+import ru.practicum.shareit.requests.dto.RequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
-import java.util.List;
 
-//@Validated
-@Slf4j
-@RestController
+@Controller
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
+@Slf4j
+@Validated
 public class ItemRequestController {
-    private final ItemRequestService itemRequestService;
+    private final ItemRequestClient itemRequestService;
 
     /*POST /requests — добавить новый запрос вещи. Основная часть запроса — текст запроса,
     где пользователь описывает, какая именно вещь ему нужна.*/
     @PostMapping
-    public ItemRequestDtoAnswer createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                  @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("Получен запрос POST/requests от пользователя id = {} с телом запроса: {}", userId, itemRequestDto);
-        LocalDateTime createDate = LocalDateTime.now();
-        return itemRequestService.createItemRequest(itemRequestDto, userId, createDate);
+    public ResponseEntity<Object> createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                    @Valid @RequestBody RequestDto itemRequestDto) {
+        log.info("Received a request: POST/requests from user id = {} with body: {}", userId, itemRequestDto);
+        return itemRequestService.createItemRequest(itemRequestDto, userId);
     }
 
     /*GET /requests — получить список своих запросов вместе с данными об ответах на них.
@@ -45,8 +40,8 @@ public class ItemRequestController {
     название, id владельца. Так в дальнейшем, используя указанные id вещей, можно будет получить подробную информацию
     о каждой вещи. Запросы должны возвращаться в отсортированном порядке от более новых к более старым.*/
     @GetMapping
-    public List<ItemRequestDtoAnswerFull> getAllItemRequestsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Получен запрос GET/requests от пользователя id = {}", userId);
+    public ResponseEntity<Object> getAllItemRequestsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        log.info("Received a request: GET/requests from user id = {}", userId);
         return itemRequestService.getAllItemRequestsOfUser(userId);
     }
 
@@ -56,22 +51,22 @@ public class ItemRequestController {
     Для этого нужно передать два параметра: from — индекс первого элемента, начиная с 0, и size — количество элементов
     для отображения.*/
     @GetMapping("/all")
-    public List<ItemRequestDtoAnswerFull>
+    public ResponseEntity<Object>
     getAllItemRequestsByParams(@RequestHeader("X-Sharer-User-Id") Long userId,
+                               @PositiveOrZero(message = "'from' must be positive or zero")
                                @RequestParam(name = "from", required = false) Integer from,
+                               @Positive(message = "Значение size должно быть позитивным")
                                @RequestParam(name = "size", required = false) Integer size) {
-        log.info("Получен запрос GET/requests/all от пользователя id = {} на вывод запросов, начиная со странницы {}, " +
-                "выводить по {} элементов", userId, from, size);
+        log.info("Received a request: GET/requests/all?from={}&size={} from user id = {}", from, size, userId);
         return itemRequestService.getAllItemRequestsByParams(userId, from, size);
     }
 
     /*GET /requests/{requestId} — получить данные об одном конкретном запросе вместе с данными об ответах на него
     в том же формате, что и в эндпоинте GET /requests. Посмотреть данные об отдельном запросе может любой пользователь.*/
     @GetMapping("/{requestId}")
-    public ItemRequestDtoAnswerFull getItemRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                       @PathVariable Long requestId) {
-        log.info("Получен запрос GET/requests/{requestId} от пользователя id = {} " +
-                "на получение запроса id = {}", userId, requestId);
+    public ResponseEntity<Object> getItemRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                     @PathVariable Long requestId) {
+        log.info("Received a request: GET/requests/{} from user id = {} ", requestId, userId);
         return itemRequestService.getItemRequestById(userId, requestId);
     }
 }

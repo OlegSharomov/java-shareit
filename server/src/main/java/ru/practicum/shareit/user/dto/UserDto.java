@@ -15,9 +15,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class UserDto {
     private Long id;
-    @NotBlank(message = "Имя пользователя отсутствует")
+//    @NotBlank(message = "Имя пользователя отсутствует")
     private String name;
-    @NotNull(message = "Email пользователя отсутствует")
-    @Email(message = "Email не проходит проверку")
+//    @NotNull(message = "Email пользователя отсутствует")
+//    @Email(message = "Email не проходит проверку")
     private String email;
 }

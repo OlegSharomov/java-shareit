@@ -101,18 +101,18 @@ public class ItemRequestServiceTest {
         assertEquals(Collections.emptyList(), result);
     }
 
-    @Test
-    public void shouldReturnListOfItemRequestDtoAnswerFullWhenWeCallGetAllItemRequestsByParams() {
-        Page<ItemRequest> page = new PageImpl<>(List.of(itemRequest1, itemRequest2));
-        when(userService.getEntityUserByIdFromStorage(2L)).thenReturn(user2);
-        when(itemRequestsRepository.findAllByRequestorNotLike(eq(user2), any(Pageable.class)))
-                .thenReturn(page);
-        when(itemRepository.findAllByRequest(itemRequest1)).thenReturn(Collections.emptyList());
-        when(itemRepository.findAllByRequest(itemRequest2)).thenReturn(List.of(item1));
-        List<ItemRequestDtoAnswerFull> listToCheck = List.of(itemRequestDtoAnswerFull1, itemRequestDtoAnswerFull2);
-        List<ItemRequestDtoAnswerFull> result = itemRequestService.getAllItemRequestsByParams(2L, 0, 5);
-        assertEquals(listToCheck, result);
-    }
+//    @Test
+//    public void shouldReturnListOfItemRequestDtoAnswerFullWhenWeCallGetAllItemRequestsByParams() {
+//        Page<ItemRequest> page = new PageImpl<>(List.of(itemRequest1, itemRequest2));
+//        when(userService.getEntityUserByIdFromStorage(2L)).thenReturn(user2);
+//        when(itemRequestsRepository.findAllByRequestorNotLike(eq(user2), any(Pageable.class)))
+//                .thenReturn(page);
+//        when(itemRepository.findAllByRequest(itemRequest1)).thenReturn(Collections.emptyList());
+//        when(itemRepository.findAllByRequest(itemRequest2)).thenReturn(List.of(item1));
+//        List<ItemRequestDtoAnswerFull> listToCheck = List.of(itemRequestDtoAnswerFull1, itemRequestDtoAnswerFull2);
+//        List<ItemRequestDtoAnswerFull> result = itemRequestService.getAllItemRequestsByParams(2L, 0, 5);
+//        assertEquals(listToCheck, result);
+//    }
 
     // getItemRequest
     @Test

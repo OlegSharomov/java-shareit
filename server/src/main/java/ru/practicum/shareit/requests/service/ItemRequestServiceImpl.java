@@ -68,7 +68,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         Pageable pag = PageRequest.of(from / size, size, Sort.by("created").descending());
         User requestor = userService.getEntityUserByIdFromStorage(userId);
-        Page<ItemRequest> page = itemRequestsRepository.findAllByRequestorNotLike(requestor, pag);
+        Page<ItemRequest> page = itemRequestsRepository.findAllByRequestorNot(requestor, pag);
         return page.stream()
                 .map(x -> {
                     List<ItemDtoAnswer> items = itemRepository.findAllByRequest(x).stream()

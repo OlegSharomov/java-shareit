@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ItemRequestDto {
     private Long id;
-    @NotBlank(message = "Поле с описанием запроса должно быть заполнено")
+    //    @NotBlank(message = "Поле с описанием запроса должно быть заполнено")
     private String description;
     private User requestor;
     private LocalDateTime created;

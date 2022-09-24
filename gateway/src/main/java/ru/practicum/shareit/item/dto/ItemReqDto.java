@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ItemRequestDto {
+public class ItemReqDto {
     private Long id;
     @NotBlank(message = "The name of item is empty")
     private String name;

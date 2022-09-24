@@ -28,7 +28,7 @@ public class ErrorHandler {
 //    @ResponseStatus(HttpStatus.CONFLICT)
 //    public ErrorResponse handleDuplicateException(final DuplicateException e) {
 //        logMakeNote(e);
-//        return new ErrorResponse(String.format("Произошла ошибка. %s", e.getMessage()));
+//        return new ErrorResponse(String.format("DuplicateException. %s", e.getMessage()));
 //    }
 //
 //    @ExceptionHandler
@@ -83,38 +83,38 @@ public class ErrorHandler {
         return new ErrorResponse(String.format("MissingRequestHeaderException.  %s", e.getMessage()));
     }
 //
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorResponse handleConstraintViolationException(final javax.validation.ConstraintViolationException e) {
-//        logMakeNote(e);
-//        return new ErrorResponse(String.format("Произошла ошибка. %s",
-//                e.getConstraintViolations().iterator().next().getMessage()));
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConstraintViolationException(final javax.validation.ConstraintViolationException e) {
+        logMakeNote(e);
+        return new ErrorResponse(String.format("Произошла ошибка. %s",
+                e.getConstraintViolations().iterator().next().getMessage()));
+    }
 //
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
-//        logMakeNote(e);
-//        return new ErrorResponse(e.getMessage());
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
+        logMakeNote(e);
+        return new ErrorResponse(String.format("MissingServletRequestParameterException.  %s", e.getMessage()));
+    }
 //
-//    @ExceptionHandler
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
-//        logMakeNote(e);
-//        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS");
-//    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
+        logMakeNote(e);
+        return new ErrorResponse(e.getMessage());
+    }
 //
     private void logMakeNote(Exception e) {
         log.warn("При обработке запроса произошла ошибка: '{}', '{}'", e.getMessage(), e.getStackTrace());
     }
 
 //        @ExceptionHandler
-//    @ResponseStatus(HttpStatus.)
-//    public ResponseEntity<Object> handleAllExceptions(final Exception e) {
+//    @ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
+//    public ErrorResponse handleAllExceptions(final Exception e) {
 //        log.warn("Случилось непредвиденное: Класс ошибки: '{}', \n Сообщение ошибки: '{}', " +
 //                "\n СтекТрейс: '{}'",e.getClass(), e.getMessage(), e.getStackTrace());
 //        logMakeNote(e);
-//        return new ResponseEntity<>(HttpStatus.OK);
+//        return new ErrorResponse(e.getMessage());
 //    }
 }

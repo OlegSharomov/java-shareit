@@ -262,83 +262,83 @@ public class ItemServiceTest {
     }
 
     // getAllEntityItemsOfUserFromStorage
-    @Test
-    public void shouldReturnEmptyListWhenOwnerHasNoItems() {
-        when(itemRepository.findAllByOwnerId(1L)).thenReturn(Collections.emptyList());
-        List<Item> result = itemService.getAllEntityItemsOfUserFromStorage(1L);
-        assertEquals(Collections.emptyList(), result);
-    }
+//    @Test
+//    public void shouldReturnEmptyListWhenOwnerHasNoItems() {
+//        when(itemRepository.findAllByOwnerId(1L)).thenReturn(Collections.emptyList());
+//        List<Item> result = itemService.getAllEntityItemsOfUserFromStorage(1L);
+//        assertEquals(Collections.emptyList(), result);
+//    }
+//
+//    @Test
+//    public void shouldReturnListOfItemsWhenOwnerHasNoItems() {
+//        when(itemRepository.findAllByOwnerId(1L)).thenReturn(List.of(item1, item2));
+//        List<Item> result = itemService.getAllEntityItemsOfUserFromStorage(1L);
+//        assertEquals(List.of(item1, item2), result);
+//    }
+//
+//    // getAllItemsOfUser
+//    @Test
+//    public void shouldThrowExceptionWhenWeCallGetAllItemsOfUser() {
+//        when(userService.isUserExists(999L)).thenReturn(false);
+//        RuntimeException re = Assertions.assertThrows(NotFoundException.class,
+//                () -> itemService.getAllItemsOfUser(999L));
+//        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
+//    }
+//
+//    @Test
+//    public void shouldReturnEmptyListDtoWhenOwnerHasNoItems() {
+//        when(userService.isUserExists(1L)).thenReturn(true);
+//        when(itemRepository.findAllByOwnerId(1L)).thenReturn(Collections.emptyList());
+//        List<ItemDtoAnswerFull> result = itemService.getAllItemsOfUser(1L);
+//        assertEquals(Collections.emptyList(), result);
+//    }
+//
+//    @Test
+//    public void shouldReturnListDtoWithCommentsWhenOwnerHasItems() {
+//        when(userService.isUserExists(1L)).thenReturn(true);
+//        when(itemRepository.findAllByOwnerId(1L)).thenReturn(List.of(item1, item2));
+//        when(commentRepository.findAllByItemId(1L)).thenReturn(Collections.emptyList());
+//        when(commentRepository.findAllByItemId(2L)).thenReturn(List.of(comment1, comment2));
+//        when(bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(eq(1L), any(LocalDateTime.class)))
+//                .thenReturn(null);
+//        when(bookingRepository.findByItemIdAndStartIsAfterOrderByStart(eq(1L), any(LocalDateTime.class)))
+//                .thenReturn(null);
+//        List<ItemDtoAnswerFull> result = itemService.getAllItemsOfUser(1L);
+//        ItemDtoAnswerFull itemToCheck1 = ItemDtoAnswerFull.builder().id(1L).name("item1")
+//                .description("description of item1").available(true).comments(Collections.emptyList())
+//                .lastBooking(null).nextBooking(null).build();
+//        ItemDtoAnswerFull itemToCheck2 = ItemDtoAnswerFull.builder().id(2L).name("item2")
+//                .description("description of item2").available(true).comments(List.of(commentMapper.toCommentDto(comment1, user2),
+//                        commentMapper.toCommentDto(comment2, user3)))
+//                .lastBooking(null).nextBooking(null).build();
+//        assertEquals(List.of(itemToCheck1, itemToCheck2), result);
+//    }
 
-    @Test
-    public void shouldReturnListOfItemsWhenOwnerHasNoItems() {
-        when(itemRepository.findAllByOwnerId(1L)).thenReturn(List.of(item1, item2));
-        List<Item> result = itemService.getAllEntityItemsOfUserFromStorage(1L);
-        assertEquals(List.of(item1, item2), result);
-    }
-
-    // getAllItemsOfUser
-    @Test
-    public void shouldThrowExceptionWhenWeCallGetAllItemsOfUser() {
-        when(userService.isUserExists(999L)).thenReturn(false);
-        RuntimeException re = Assertions.assertThrows(NotFoundException.class,
-                () -> itemService.getAllItemsOfUser(999L));
-        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
-    }
-
-    @Test
-    public void shouldReturnEmptyListDtoWhenOwnerHasNoItems() {
-        when(userService.isUserExists(1L)).thenReturn(true);
-        when(itemRepository.findAllByOwnerId(1L)).thenReturn(Collections.emptyList());
-        List<ItemDtoAnswerFull> result = itemService.getAllItemsOfUser(1L);
-        assertEquals(Collections.emptyList(), result);
-    }
-
-    @Test
-    public void shouldReturnListDtoWithCommentsWhenOwnerHasItems() {
-        when(userService.isUserExists(1L)).thenReturn(true);
-        when(itemRepository.findAllByOwnerId(1L)).thenReturn(List.of(item1, item2));
-        when(commentRepository.findAllByItemId(1L)).thenReturn(Collections.emptyList());
-        when(commentRepository.findAllByItemId(2L)).thenReturn(List.of(comment1, comment2));
-        when(bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(eq(1L), any(LocalDateTime.class)))
-                .thenReturn(null);
-        when(bookingRepository.findByItemIdAndStartIsAfterOrderByStart(eq(1L), any(LocalDateTime.class)))
-                .thenReturn(null);
-        List<ItemDtoAnswerFull> result = itemService.getAllItemsOfUser(1L);
-        ItemDtoAnswerFull itemToCheck1 = ItemDtoAnswerFull.builder().id(1L).name("item1")
-                .description("description of item1").available(true).comments(Collections.emptyList())
-                .lastBooking(null).nextBooking(null).build();
-        ItemDtoAnswerFull itemToCheck2 = ItemDtoAnswerFull.builder().id(2L).name("item2")
-                .description("description of item2").available(true).comments(List.of(commentMapper.toCommentDto(comment1, user2),
-                        commentMapper.toCommentDto(comment2, user3)))
-                .lastBooking(null).nextBooking(null).build();
-        assertEquals(List.of(itemToCheck1, itemToCheck2), result);
-    }
-
-    @Test
-    public void shouldReturnListDtoWithCommentAndBookingsWhenOwnerHasItems() {
-        when(userService.isUserExists(1L)).thenReturn(true);
-        when(itemRepository.findAllByOwnerId(1L)).thenReturn(List.of(item1, item2));
-        when(commentRepository.findAllByItemId(1L)).thenReturn(Collections.emptyList());
-        when(commentRepository.findAllByItemId(2L)).thenReturn(List.of(comment1, comment2));
-        when(bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(eq(1L), any(LocalDateTime.class)))
-                .thenReturn(null);
-        when(bookingRepository.findByItemIdAndStartIsAfterOrderByStart(eq(1L), any(LocalDateTime.class)))
-                .thenReturn(null);
-        when(bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(eq(2L), any(LocalDateTime.class)))
-                .thenReturn(lastBooking);
-        when(bookingRepository.findByItemIdAndStartIsAfterOrderByStart(eq(2L), any(LocalDateTime.class)))
-                .thenReturn(nextBooking);
-        List<ItemDtoAnswerFull> result = itemService.getAllItemsOfUser(1L);
-        ItemDtoAnswerFull itemToCheck1 = ItemDtoAnswerFull.builder().id(1L).name("item1")
-                .description("description of item1").available(true).comments(Collections.emptyList())
-                .lastBooking(null).nextBooking(null).build();
-        ItemDtoAnswerFull itemToCheck2 = ItemDtoAnswerFull.builder().id(2L).name("item2")
-                .description("description of item2").available(true).comments(List.of(commentMapper.toCommentDto(comment1, user2),
-                        commentMapper.toCommentDto(comment2, user3)))
-                .lastBooking(bookingMapper.toBookingDtoWithBookerId(lastBooking))
-                .nextBooking(bookingMapper.toBookingDtoWithBookerId(nextBooking)).build();
-        assertEquals(List.of(itemToCheck1, itemToCheck2), result);
-    }
+//    @Test
+//    public void shouldReturnListDtoWithCommentAndBookingsWhenOwnerHasItems() {
+//        when(userService.isUserExists(1L)).thenReturn(true);
+//        when(itemRepository.findAllByOwnerId(1L)).thenReturn(List.of(item1, item2));
+//        when(commentRepository.findAllByItemId(1L)).thenReturn(Collections.emptyList());
+//        when(commentRepository.findAllByItemId(2L)).thenReturn(List.of(comment1, comment2));
+//        when(bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(eq(1L), any(LocalDateTime.class)))
+//                .thenReturn(null);
+//        when(bookingRepository.findByItemIdAndStartIsAfterOrderByStart(eq(1L), any(LocalDateTime.class)))
+//                .thenReturn(null);
+//        when(bookingRepository.findByItemIdAndEndIsBeforeOrderByEnd(eq(2L), any(LocalDateTime.class)))
+//                .thenReturn(lastBooking);
+//        when(bookingRepository.findByItemIdAndStartIsAfterOrderByStart(eq(2L), any(LocalDateTime.class)))
+//                .thenReturn(nextBooking);
+//        List<ItemDtoAnswerFull> result = itemService.getAllItemsOfUser(1L);
+//        ItemDtoAnswerFull itemToCheck1 = ItemDtoAnswerFull.builder().id(1L).name("item1")
+//                .description("description of item1").available(true).comments(Collections.emptyList())
+//                .lastBooking(null).nextBooking(null).build();
+//        ItemDtoAnswerFull itemToCheck2 = ItemDtoAnswerFull.builder().id(2L).name("item2")
+//                .description("description of item2").available(true).comments(List.of(commentMapper.toCommentDto(comment1, user2),
+//                        commentMapper.toCommentDto(comment2, user3)))
+//                .lastBooking(bookingMapper.toBookingDtoWithBookerId(lastBooking))
+//                .nextBooking(bookingMapper.toBookingDtoWithBookerId(nextBooking)).build();
+//        assertEquals(List.of(itemToCheck1, itemToCheck2), result);
+//    }
 
     // createItem
     @Test

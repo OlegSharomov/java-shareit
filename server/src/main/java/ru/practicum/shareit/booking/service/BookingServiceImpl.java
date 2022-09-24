@@ -42,11 +42,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = false)
     public BookingDtoAnswer createBooking(Long userId, BookingDto bookingDto) {
-        if (bookingDto.getId() != null && isBookingExists(bookingDto.getId())) {
+        if (bookingDto.getId() != null && Boolean.TRUE.equals(isBookingExists(bookingDto.getId()))) {
             throw new ValidationException("Данные бронирования можно изменять только через метод PATCH");
-        }
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd())) {
-            throw new ValidationException("Дата начала бронирования должна быть раньше даты окончания бронирования");
         }
         Item item = itemService.getEntityItemByIdFromStorage(bookingDto.getItemId());
         if (item.getOwner().getId().equals(userId)) {

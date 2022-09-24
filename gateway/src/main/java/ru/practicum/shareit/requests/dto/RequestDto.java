@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.requests.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +9,9 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentRequestDto {
-    Long id;
-    @NotBlank(message = "'text' is empty")
-    String text;
-    String authorName;
-    LocalDateTime created;
+public class RequestDto {
+    private Long id;
+    @NotBlank(message = "'description' is empty")
+    private String description;
+    private LocalDateTime created;
 }

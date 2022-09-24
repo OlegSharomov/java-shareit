@@ -26,6 +26,7 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,7 +81,11 @@ class ItemServiceImpl implements ItemService {
     public List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId) {
         checkExistenceUserInRepositoryById(userId);
         List<Item> items = getAllEntityItemsOfUserFromStorage(userId);
-        return items.stream().map(x -> collectItemWithBookingsAndComments(x, userId)).collect(Collectors.toList());
+        List<ItemDtoAnswerFull> result = items.stream()
+                .map(x -> collectItemWithBookingsAndComments(x, userId))
+                .sorted(Comparator.comparingLong(ItemDtoAnswerFull::getId))
+                .collect(Collectors.toList());
+        return result;
     }
 
     @Override

@@ -17,7 +17,6 @@ import ru.practicum.shareit.item.dto.ItemDtoAnswer;
 import ru.practicum.shareit.item.dto.ItemDtoAnswerFull;
 import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -42,7 +41,8 @@ class ItemController {
 
     @PostMapping
     public ItemDtoAnswer createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @Valid @RequestBody ItemDto itemDto) {
+//                                    @Valid
+                                    @RequestBody ItemDto itemDto) {
         log.info("Получен запрос POST/items от пользователя id = {} с переданным телом: {}", userId, itemDto);
         return itemService.createItem(userId, itemDto);
     }
@@ -66,7 +66,9 @@ class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                    @PathVariable Long itemId, @Valid @RequestBody CommentDto commentDto) {
+                                    @PathVariable Long itemId,
+//                                    @Valid
+                                    @RequestBody CommentDto commentDto) {
         log.info("Получен запрос POST/items/{itemId}/comment от пользователя id = {} с отзывом для вещи id = {}, " +
                 "текст отзыва: {}", userId, itemId, commentDto);
         return itemService.createComment(userId, itemId, commentDto);
