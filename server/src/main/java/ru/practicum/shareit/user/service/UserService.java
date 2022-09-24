@@ -9,10 +9,10 @@ import java.util.List;
 public interface UserService {
     List<UserDtoAnswer> getAllUsers();
 
-    // получение пользователя для контроллера
+    // getting a user for the controller
     UserDtoAnswer getUserById(Long userId);
 
-    // получение сущности БД из хранилища
+    // getting the user's DB entity from storage
     User getEntityUserByIdFromStorage(Long userId);
 
     UserDtoAnswer createUser(UserDto userDto);

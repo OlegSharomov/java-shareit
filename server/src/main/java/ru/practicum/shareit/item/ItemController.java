@@ -29,21 +29,20 @@ class ItemController {
     @GetMapping("/{itemId}")
     public ItemDtoAnswerFull getItemById(@RequestHeader("X-Sharer-User-Id") Long userId,
                                          @PathVariable Long itemId) {
-        log.info("Получен запрос GET/items/{} от пользователя id = {}", itemId, userId);
+        log.info("Received a request: GET/items/{} from user id = {}", itemId, userId);
         return itemService.getItemById(userId, itemId);
     }
 
     @GetMapping
     public List<ItemDtoAnswerFull> getAllItemsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Получен запрос GET/items от пользователя id = {}", userId);
+        log.info("Received a request: GET/items from user id = {}", userId);
         return itemService.getAllItemsOfUser(userId);
     }
 
     @PostMapping
     public ItemDtoAnswer createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-//                                    @Valid
                                     @RequestBody ItemDto itemDto) {
-        log.info("Получен запрос POST/items от пользователя id = {} с переданным телом: {}", userId, itemDto);
+        log.info("Received a request: POST/items from user id = {} with body: {}", userId, itemDto);
         return itemService.createItem(userId, itemDto);
     }
 
@@ -51,7 +50,7 @@ class ItemController {
     public ItemDtoAnswer updateItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @PathVariable Long itemId,
                                     @RequestBody ItemDto itemDto) {
-        log.info("Получен запрос PATCH/items от пользователя id = {} для изменения вещи id = {} с переданным телом: {}",
+        log.info("Received a request: PATCH/items from user id = {} to change item id = {} with body: {}",
                 userId, itemId, itemDto);
         return itemService.updateItem(userId, itemId, itemDto);
     }
@@ -60,17 +59,16 @@ class ItemController {
     @GetMapping("/search")
     public List<ItemDtoAnswer> searchForItemsByQueryText(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                          @RequestParam String text) {
-        log.info("Получен запрос GET/items/search от пользователя id = {} с текстом запроса: {}", userId, text);
+        log.info("Received a request: GET/items/search from user id = {} with 'text': {}", userId, text);
         return itemService.searchForItemsByQueryText(text);
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") Long userId,
                                     @PathVariable Long itemId,
-//                                    @Valid
                                     @RequestBody CommentDto commentDto) {
-        log.info("Получен запрос POST/items/{itemId}/comment от пользователя id = {} с отзывом для вещи id = {}, " +
-                "текст отзыва: {}", userId, itemId, commentDto);
+        log.info("Received a request: POST/items/{itemId}/comment from user id = {} with comment from item id = {}, " +
+                "'text' of comment: {}", userId, itemId, commentDto);
         return itemService.createComment(userId, itemId, commentDto);
     }
 }

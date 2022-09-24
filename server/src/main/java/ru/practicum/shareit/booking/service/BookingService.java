@@ -13,9 +13,9 @@ public interface BookingService {
 
     BookingDtoAnswerFull getBookingById(Long userId, Long bookingId);
 
-    //  Получение списка всех бронирований текущего пользователя.
+    //  Getting a list of all bookings of the current user.
     List<BookingDtoAnswerFull> getAllBookingsOfUser(Long userId, SearchStatus state, Integer from, Integer size);
 
-    // Получение списка бронирований для всех вещей текущего пользователя.
+    // Getting a list of bookings for all the items of the current user.
     List<BookingDtoAnswerFull> getAllBookingsOfItemsOwner(Long userId, SearchStatus state, Integer from, Integer size);
 }

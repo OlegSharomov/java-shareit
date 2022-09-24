@@ -26,31 +26,31 @@ class UserController {
 
     @GetMapping
     public List<UserDtoAnswer> getAllUsers() {
-        log.info("Получен запрос GET/users");
+        log.info("Received a request: GET/users");
         return service.getAllUsers();
     }
 
     @GetMapping("/{userId}")
     public UserDtoAnswer getUserById(@PathVariable Long userId) {
-        log.info("Получен запрос GET/users/{}", userId);
+        log.info("Received a request: GET/users/{}", userId);
         return service.getUserById(userId);
     }
 
     @PostMapping
     public UserDtoAnswer createUser(@Valid @RequestBody UserDto userDto) {
-        log.info("Получен запрос POST/users с переданным телом: {}", userDto);
+        log.info("Received a request: POST/users with body: {}", userDto);
         return service.createUser(userDto);
     }
 
     @PatchMapping("/{userId}")
     public UserDtoAnswer updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
-        log.info("Получен запрос PATCH/users/{} с переданным телом: {}", userId, userDto);
+        log.info("Received a request: PATCH/users/{} with body: {}", userId, userDto);
         return service.updateUser(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteUserById(@PathVariable Long userId) {
-        log.info("Получен запрос DELETE/users/{}", userId);
+        log.info("Received a request: DELETE/users/{}", userId);
         service.deleteUserById(userId);
     }
 }

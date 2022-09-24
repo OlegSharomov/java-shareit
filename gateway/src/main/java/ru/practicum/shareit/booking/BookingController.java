@@ -88,9 +88,9 @@ public class BookingController {
                                @RequestParam(name = "state", required = false,
                                        defaultValue = "ALL") String stateParam,
                                @PositiveOrZero(message = "'from' must be positive or zero")
-                               @RequestParam(name = "from", required = false) Integer from,
+                               @RequestParam(name = "from", defaultValue = "0") Integer from,
                                @Positive(message = "Значение size должно быть позитивным")
-                               @RequestParam(name = "size", required = false) Integer size) {
+                               @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Received a request: GET/bookings/owner?state={}&from={}&size={} from user id = {}",
                 stateParam, from, size, userId);
         BookingState state = BookingState.from(stateParam)

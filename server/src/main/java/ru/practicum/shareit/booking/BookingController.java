@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,11 +17,8 @@ import ru.practicum.shareit.booking.dto.BookingDtoAnswerFull;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.SearchStatus;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
-//@Validated
 @Slf4j
 @RestController
 @RequestMapping(path = "/bookings")
@@ -35,7 +31,6 @@ public class BookingController {
     а затем подтверждён владельцем вещи. После создания запрос находится в статусе WAITING — «ожидает подтверждения». */
     @PostMapping
     public BookingDtoAnswer createBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-//                                          @Valid
                                           @RequestBody BookingDto bookingDto) {
         log.info("Получен запрос POST/bookings от пользователя id = {} с переданным телом: {}", userId, bookingDto);
         return bookingService.createBooking(userId, bookingDto);
@@ -46,7 +41,6 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public BookingDtoAnswerFull changeRequestStatus(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                     @PathVariable("bookingId") Long bookingId,
-//                                                    @NotNull
                                                     @RequestParam("approved") Boolean approved) {
         log.info("Получен запрос PATCH/bookings/{bookingId}?approved={approved} от пользователя id = {} " +
                 "на подтверждение бронирования: {}, со значением {}", userId, bookingId, approved);
@@ -57,7 +51,6 @@ public class BookingController {
     Может быть выполнено либо автором бронирования, либо владельцем вещи, к которой относится бронирование.*/
     @GetMapping("/{bookingId}")
     public BookingDtoAnswerFull getBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-//                                           @Positive(message = "Переменная bookingId должна быть указана и быть больше 0")
                                            @PathVariable("bookingId") Long bookingId) {
         log.info("Получен запрос GET/bookings/{bookingId} от пользователя id = {} " +
                 "на просмотр бронирования id = {}", userId, bookingId);
@@ -73,9 +66,7 @@ public class BookingController {
     public List<BookingDtoAnswerFull>
     getAllBookingsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                          @RequestParam(required = false, defaultValue = "ALL") SearchStatus state,
-//                         @PositiveOrZero(message = "Значение from должно быть позитивным или 0")
                          @RequestParam(required = false) Integer from,
-//                         @Positive(message = "Значение size должно быть позитивным")
                          @RequestParam(required = false) Integer size) {
         log.info("Получен запрос GET/bookings?state={state} от пользователя id = {} " +
                 "на просмотр бронирований со статусом: {}, страницы: от{} до {}", userId, state, from, size);
@@ -88,9 +79,7 @@ public class BookingController {
     public List<BookingDtoAnswerFull>
     getAllBookingsOfItemsOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                @RequestParam(required = false, defaultValue = "ALL") SearchStatus state,
-//                               @PositiveOrZero(message = "Значение from должно быть позитивным или 0")
                                @RequestParam(required = false) Integer from,
-//                               @Positive(message = "Значение size должно быть позитивным")
                                @RequestParam(required = false) Integer size) {
         log.info("Получен запрос GET/bookings/owner?state={state} от пользователя id = {} " +
                 "на просмотр бронирований со статусом: {}, страницы: от {} до {}", userId, state, from, size);

@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -17,13 +15,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BookingDto {
     Long id;
-//    @NotNull
-//    @Future(message = "Дата начала бронирования указана в прошлом")
     LocalDateTime start;
-//    @NotNull
-//    @Future(message = "Дата окончания бронирования указана в прошлом")
     LocalDateTime end;
     Long itemId;
-    User booker;    // пользователь, который осуществляет бронирование
+    User booker;    // The user who created the booking
     BookingStatus status;
 }

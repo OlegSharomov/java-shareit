@@ -43,14 +43,14 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = false)
     public BookingDtoAnswer createBooking(Long userId, BookingDto bookingDto) {
         if (bookingDto.getId() != null && Boolean.TRUE.equals(isBookingExists(bookingDto.getId()))) {
-            throw new ValidationException("Данные бронирования можно изменять только через метод PATCH");
+            throw new ValidationException("Booking data can only be changed via the 'PATCH' method");
         }
         Item item = itemService.getEntityItemByIdFromStorage(bookingDto.getItemId());
         if (item.getOwner().getId().equals(userId)) {
-            throw new NotFoundException("Вещи не доступны для бронирования их владельцам");
+            throw new NotFoundException("Items are not available for booking to their owners");
         }
         if (!item.getAvailable()) {
-            throw new ValidationException("Запрашиваемая вещь не доступна для бронирования");
+            throw new ValidationException("The item is not available for booking");
         }
         User booker = userService.getEntityUserByIdFromStorage(userId);
         Booking booking = bookingMapper.toBooking(bookingDto);
@@ -65,13 +65,13 @@ public class BookingServiceImpl implements BookingService {
     @Transactional(readOnly = false)
     public BookingDtoAnswerFull updateBookingStatus(Long userId, Long bookingId, Boolean approved) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String
-                .format("Запрашиваемое бронирование с id = %d не найдено", bookingId)));
+                .format("Booking with id = %d not found", bookingId)));
         if (!booking.getItem().getOwner().getId().equals(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не может редактировать статус " +
-                    "бронирования для вещи id = %d, т.к. он не является ее владельцем", userId, booking.getItem().getId()));
+            throw new NotFoundException(String.format("The user with id = %d cannot edit the booking " +
+                    "status for the item id = %d, because he is not its owner", userId, booking.getItem().getId()));
         }
         if (booking.getStatus().equals(APPROVED)) {
-            throw new ValidationException("Статус бронирования уже подтвержден");
+            throw new ValidationException("The booking status has already been confirmed");
         }
         if (Boolean.TRUE.equals(approved)) {
             booking.setStatus(APPROVED);
@@ -86,10 +86,10 @@ public class BookingServiceImpl implements BookingService {
     public BookingDtoAnswerFull getBookingById(Long userId, Long bookingId) {
         checkExistenceUserById(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException(String
-                .format("Запрашиваемое бронирование с id = %d не найдено", bookingId)));
+                .format("Requested booking with id = %d not found", bookingId)));
         if (!userId.equals(booking.getBooker().getId()) && !userId.equals(booking.getItem().getOwner().getId())) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не имеет доступа к проссмотру " +
-                    "бронирования id = %d", userId, bookingId
+            throw new NotFoundException(String.format("The user with id = %d does not have access " +
+                    "to view the booking id = %d", userId, bookingId
             ));
         }
         return bookingMapper.toBookingDtoAnswerFull(booking);
@@ -254,7 +254,7 @@ public class BookingServiceImpl implements BookingService {
 
     public void checkExistenceUserById(Long userId) {
         if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
+            throw new NotFoundException(String.format("User with id = %d not found", userId));
         }
     }
 

@@ -51,13 +51,13 @@ public class UserController {
                                              @RequestBody UserRequestDto userDto) {
         log.info("Received a request: PATCH/users/{} with request body: {}", userId, userDto);
         if (userDto.getId() != null && !userDto.getId().equals(userId)) {
-            throw new ValidationException("Нельзя изменять id пользователя");
+            throw new ValidationException("You cannot change the user ID");
         }
         if (userDto.getName() != null && userDto.getName().trim().isEmpty()) {
-            throw new ValidationException("Поле name должно быть заполнено");
+            throw new ValidationException("The name field must be filled in");
         }
         if (userDto.getEmail() != null && userDto.getEmail().trim().isEmpty()) {
-            throw new ValidationException("Поле email должно быть заполнено");
+            throw new ValidationException("The email field must be filled in");
         }
         return userClient.updateUser(userId, userDto);
     }
@@ -68,5 +68,4 @@ public class UserController {
         log.info("Received a request: DELETE/users/{}", userId);
         return userClient.deleteUserById(userId);
     }
-
 }

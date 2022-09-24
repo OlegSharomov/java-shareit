@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.exceptions.ExceptionForDeleteMethod;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -33,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDtoAnswer getUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String
-                .format("Пользователь с переданным id = %d отсутствует в хранилище", userId)));
+                .format("User with id = %d not found", userId)));
         return userMapper.toUserDtoAnswer(user);
     }
 
@@ -41,14 +40,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User getEntityUserByIdFromStorage(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(String
-                .format("Пользователь с переданным id = %d отсутствует в хранилище", userId)));
+                .format("User with id = %d not found", userId)));
     }
 
     @Override
     @Transactional(readOnly = false)
     public UserDtoAnswer createUser(UserDto userDto) {
         if (userDto.getId() != null && Boolean.TRUE.equals(isUserExists(userDto.getId()))) {
-            throw new ValidationException("Изменять данные пользователя можно только через метод PATCH");
+            throw new ValidationException("You can change user data only through the 'PATCH' method");
         }
         User user = userMapper.toUser(userDto);
         userRepository.save(user);
@@ -59,7 +58,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = false)
     public UserDtoAnswer updateUser(Long userId, UserDto userDto) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("Пользователь с переданным id не найден"));
+                new NotFoundException(String.format("User with id = %d not found", userId)));
         userMapper.updateUserFromDto(userDto, user);
         return userMapper.toUserDtoAnswer(user);
     }

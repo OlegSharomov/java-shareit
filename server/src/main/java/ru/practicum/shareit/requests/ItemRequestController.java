@@ -2,7 +2,6 @@ package ru.practicum.shareit.requests;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,13 +15,9 @@ import ru.practicum.shareit.requests.dto.ItemRequestDtoAnswer;
 import ru.practicum.shareit.requests.dto.ItemRequestDtoAnswerFull;
 import ru.practicum.shareit.requests.service.ItemRequestService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
-//@Validated
 @Slf4j
 @RestController
 @RequestMapping(path = "/requests")
@@ -35,7 +30,7 @@ public class ItemRequestController {
     @PostMapping
     public ItemRequestDtoAnswer createItemRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                   @RequestBody ItemRequestDto itemRequestDto) {
-        log.info("Получен запрос POST/requests от пользователя id = {} с телом запроса: {}", userId, itemRequestDto);
+        log.info("Received a request: POST/requests from user id = {} with body: {}", userId, itemRequestDto);
         LocalDateTime createDate = LocalDateTime.now();
         return itemRequestService.createItemRequest(itemRequestDto, userId, createDate);
     }
@@ -46,7 +41,7 @@ public class ItemRequestController {
     о каждой вещи. Запросы должны возвращаться в отсортированном порядке от более новых к более старым.*/
     @GetMapping
     public List<ItemRequestDtoAnswerFull> getAllItemRequestsOfUser(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        log.info("Получен запрос GET/requests от пользователя id = {}", userId);
+        log.info("Received a request: GET/requests from user id = {}", userId);
         return itemRequestService.getAllItemRequestsOfUser(userId);
     }
 
@@ -60,8 +55,8 @@ public class ItemRequestController {
     getAllItemRequestsByParams(@RequestHeader("X-Sharer-User-Id") Long userId,
                                @RequestParam(name = "from", required = false) Integer from,
                                @RequestParam(name = "size", required = false) Integer size) {
-        log.info("Получен запрос GET/requests/all от пользователя id = {} на вывод запросов, начиная со странницы {}, " +
-                "выводить по {} элементов", userId, from, size);
+        log.info("Received a request: GET/requests/all from user id = {} to output requests " +
+                "starting from page {}, output by {} elements", userId, from, size);
         return itemRequestService.getAllItemRequestsByParams(userId, from, size);
     }
 
@@ -70,8 +65,7 @@ public class ItemRequestController {
     @GetMapping("/{requestId}")
     public ItemRequestDtoAnswerFull getItemRequestById(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                        @PathVariable Long requestId) {
-        log.info("Получен запрос GET/requests/{requestId} от пользователя id = {} " +
-                "на получение запроса id = {}", userId, requestId);
+        log.info("Received a request: GET/requests/{} from user id = {} ", requestId, userId);
         return itemRequestService.getItemRequestById(userId, requestId);
     }
 }

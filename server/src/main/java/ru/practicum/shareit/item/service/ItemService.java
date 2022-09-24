@@ -10,23 +10,23 @@ import java.util.List;
 
 public interface ItemService {
 
-    // получение вещи для контроллера
+    // getting item for the controller
     ItemDtoAnswerFull getItemById(Long userId, Long itemId);
 
-    // получение сущности БД из хранилища
+    // getting a DB entity of item from storage
     Item getEntityItemByIdFromStorage(Long itemId);
 
-    // получение списка вещей для контроллера
+    // getting a list of items for the controller
     List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId);
 
-    // получение списка сущностей БД из хранилища
+    // getting a list of DB entities of items from storage
     List<Item> getAllEntityItemsOfUserFromStorage(Long userId);
 
     ItemDtoAnswer createItem(Long userId, ItemDto itemDto);
 
     ItemDtoAnswer updateItem(Long userId, Long itemId, ItemDto itemDto);
 
-    // Получение списка вещей по ключевым словам
+    // Getting a list of items by keywords
     List<ItemDtoAnswer> searchForItemsByQueryText(String text);
 
     CommentDto createComment(Long userId, Long itemId, CommentDto commentDto);

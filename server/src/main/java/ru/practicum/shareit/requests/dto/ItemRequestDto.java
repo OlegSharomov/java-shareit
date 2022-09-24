@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ItemRequestDto {
     private Long id;
-    //    @NotBlank(message = "Поле с описанием запроса должно быть заполнено")
     private String description;
     private User requestor;
     private LocalDateTime created;

@@ -2,7 +2,6 @@ package ru.practicum.shareit.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -15,7 +14,7 @@ import java.util.Objects;
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
-//    @ExceptionHandler
+    //    @ExceptionHandler
 //    @ResponseStatus(HttpStatus.OK)
 //    public ResponseEntity<Object> handleExceptionForDeleteMethod(final ExceptionForDeleteMethod e) {
 //        log.warn("Случилось непредвиденное: Класс ошибки: '{}', \n Сообщение ошибки: '{}', " +
@@ -53,15 +52,16 @@ public class ErrorHandler {
         logMakeNote(e);
         ErrorResponse answer;
         try {
-            answer = new ErrorResponse(String.format("MethodArgumentNotValidException. При обработке поля %s произошла ошибка. %s",
+            answer = new ErrorResponse(String.format("An error occurred while processing the %s field. %s",
                     Objects.requireNonNull(e.getFieldError()).getField(),
                     e.getFieldError().getDefaultMessage()));
         } catch (NullPointerException ex) {
-            answer = new ErrorResponse("Ошибка валидации");
+            answer = new ErrorResponse("Validation error");
         }
         return answer;
     }
-//
+
+    //
 //    @ExceptionHandler
 //    @ResponseStatus(HttpStatus.FORBIDDEN)
 //    public ErrorResponse handleValidationOwnerException(final OwnerVerificationException e) {
@@ -73,40 +73,44 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
         logMakeNote(e);
-        return new ErrorResponse(String.format("ValidationException.  %s", e.getMessage()));
+        return new ErrorResponse(String.format("Error: %s", e.getMessage()));
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingRequestHeaderException(final MissingRequestHeaderException e) {
         logMakeNote(e);
-        return new ErrorResponse(String.format("MissingRequestHeaderException.  %s", e.getMessage()));
+        return new ErrorResponse(String.format("Error: %s", e.getMessage()));
     }
-//
+
+    //
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleConstraintViolationException(final javax.validation.ConstraintViolationException e) {
         logMakeNote(e);
-        return new ErrorResponse(String.format("Произошла ошибка. %s",
+        return new ErrorResponse(String.format("Error: %s",
                 e.getConstraintViolations().iterator().next().getMessage()));
     }
-//
+
+    //
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingServletRequestParameterException(final MissingServletRequestParameterException e) {
         logMakeNote(e);
-        return new ErrorResponse(String.format("MissingServletRequestParameterException.  %s", e.getMessage()));
+        return new ErrorResponse(String.format("Error: %s", e.getMessage()));
     }
-//
+
+    //
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
         logMakeNote(e);
         return new ErrorResponse(e.getMessage());
     }
-//
+
+    //
     private void logMakeNote(Exception e) {
-        log.warn("При обработке запроса произошла ошибка: '{}', '{}'", e.getMessage(), e.getStackTrace());
+        log.warn("Error: '{}', '{}'", e.getMessage(), e.getStackTrace());
     }
 
 //        @ExceptionHandler

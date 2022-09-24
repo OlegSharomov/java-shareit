@@ -37,15 +37,11 @@ public class ItemRequestClient extends BaseClient {
 
 
     public ResponseEntity<Object> getAllItemRequestsByParams(Long userId, Integer from, Integer size) {
-        if (from == null || size == null) {
-            return get("/all", userId);
-        } else {
             Map<String, Object> parameters = Map.of(
                     "from", from,
                     "size", size
             );
             return get("/all?from={from}&size={size}", userId, parameters);
-        }
     }
 
     public ResponseEntity<Object> getItemRequestById(Long userId, Long requestId) {

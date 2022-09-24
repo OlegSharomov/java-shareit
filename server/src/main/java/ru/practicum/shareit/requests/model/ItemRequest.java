@@ -31,7 +31,7 @@ public class ItemRequest {
     private String description;
     @ManyToOne
     @JoinColumn(name = "requestor_id", referencedColumnName = "id")
-    private User requestor;     // — пользователь, создавший запрос
+    private User requestor;     // — user who created a request
     @Column(name = "created")
     private LocalDateTime created;
 

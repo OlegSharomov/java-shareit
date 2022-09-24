@@ -58,7 +58,7 @@ class ItemServiceImpl implements ItemService {
     @Transactional
     public Item getEntityItemByIdFromStorage(Long itemId) {
         return itemRepository.findById(itemId).orElseThrow(() ->
-                new NotFoundException(String.format("Вещь с переданным id = %d отсутствует в хранилище", itemId)));
+                new NotFoundException(String.format("The item with id = %d is missing from the storage", itemId)));
     }
 
     @Transactional
@@ -99,15 +99,15 @@ class ItemServiceImpl implements ItemService {
     public ItemDtoAnswer createItem(Long userId, ItemDto itemDto) {
         checkExistenceUserInRepositoryById(userId);
         if (itemDto.getId() != null && Boolean.TRUE.equals(isItemExists(itemDto.getId()))) {
-            throw new ValidationException("Данные вещи можно изменять только через метод PATCH");
+            throw new ValidationException("Items can be changed only through the 'PATCH' method");
         }
         ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
-                    new NotFoundException("Переданный id запроса вещи не найден"));
+                    new NotFoundException("The passed item request id was not found"));
         }
         if (itemRequest != null && itemRequest.getRequestor().getId().equals(userId)) {
-            throw new ValidationException("Пользователь, создавший запрос не может предлагать для него вещи");
+            throw new ValidationException("The user who created the request cannot offer items for him");
         }
         Item item = itemMapper.toItem(itemDto, itemRequest);
         User owner = userService.getEntityUserByIdFromStorage(userId);
@@ -123,13 +123,12 @@ class ItemServiceImpl implements ItemService {
         ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> new NotFoundException(
-                        String.format("Переданный id = %d запроса вещи не найден", itemDto.getRequestId())));
+                    String.format("Passed id = %d of the item request not found", itemDto.getRequestId())));
         }
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String
-                .format("Вещь с переданным id = %d не найдена", itemId)));
+                .format("Item with id = %d not found", itemId)));
         if (!item.getOwner().getId().equals(userId)) {
-            throw new OwnerVerificationException("Доступ к редактированию ограничен. " +
-                    "Редактировать вещь может только её владелец.");
+            throw new OwnerVerificationException("Editing access is restricted. Only owner of the item can edit it.");
         }
         itemMapper.updateItemFromDto(itemDto, item, itemRequest);
         itemRepository.save(item);
@@ -154,15 +153,15 @@ class ItemServiceImpl implements ItemService {
     public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
         checkExistenceUserInRepositoryById(userId);
         if (!itemRepository.existsById(itemId)) {
-            throw new NotFoundException(String.format("Вещь с переданным id = %d не найдена", itemId));
+            throw new NotFoundException(String.format("Item with id = %d not found", itemId));
         }
         List<Booking> bookings = bookingRepository.findAllByItemIdAndStatusAndEndBefore(itemId, APPROVED,
                 LocalDateTime.now());
         Booking booking = bookings.stream()
                 .filter(x -> x.getBooker().getId().equals(userId) && x.getItem().getId().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new ValidationException("Пользователь не может оставить отзыв об этой вещи, " +
-                        "т.к. отсутстуют данные о бронировании"));
+                .orElseThrow(() -> new ValidationException("The user cannot create a comment about this thing, " +
+                        "because there is no booking data"));
         Comment comment = Comment.builder()
                 .text(commentDto.getText())
                 .author(booking.getBooker())
@@ -179,7 +178,7 @@ class ItemServiceImpl implements ItemService {
 
     public void checkExistenceUserInRepositoryById(Long userId) {
         if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
+            throw new NotFoundException(String.format("User with id = %d not found", userId));
         }
     }
 }

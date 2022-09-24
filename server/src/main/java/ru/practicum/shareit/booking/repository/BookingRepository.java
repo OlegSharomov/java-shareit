@@ -14,60 +14,60 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    // Бронирования пользователя ALL
+    // Bookings of user ALL
     List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
 
     Page<Booking> findAllByBookerId(Long userId, Pageable pageable);
 
-    // Бронирования пользователя CURRENT
+    // Bookings of user CURRENT
     List<Booking> findAllByBookerIdAndEndAfterAndStartBeforeOrderByStartDesc(Long bookerId, LocalDateTime end,
                                                                              LocalDateTime start);
 
     Page<Booking> findAllByBookerIdAndEndAfterAndStartBefore(Long bookerId, LocalDateTime end,
                                                              LocalDateTime start, Pageable pageable);
 
-    // Бронирования пользователя PAST
+    // Bookings of user PAST
     List<Booking> findAllByBookerIdAndStatusAndEndBeforeOrderByStartDesc(Long bookerId, BookingStatus status,
                                                                          LocalDateTime date);
 
     Page<Booking> findAllByBookerIdAndStatusAndEndBefore(Long bookerId, BookingStatus status,
                                                          LocalDateTime date, Pageable pageable);
 
-    // Бронирования пользователя FUTURE
+    // Bookings of user FUTURE
     List<Booking> findAllByBookerIdAndStartAfterOrderByStartDesc(Long bookerId, LocalDateTime date);
 
     Page<Booking> findAllByBookerIdAndStartAfter(Long bookerId, LocalDateTime date, Pageable pageable);
 
-    // Бронирования пользователя WAITING и REJECTED
+    // Bookings of user WAITING и REJECTED
     List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(Long bookerId, BookingStatus status);
 
     Page<Booking> findAllByBookerIdAndStatus(Long bookerId, BookingStatus status, Pageable pageable);
 
-    // Бронирования вещей пользователя ALL
+    // Booking all the user's items ALL
     List<Booking> findAllByItemInOrderByStartDesc(List<Item> items);
 
     Page<Booking> findAllByItemIn(List<Item> items, Pageable pageable);
 
-    // Бронирования вещей пользователя CURRENT
+    // Booking all the user's items CURRENT
     List<Booking> findAllByItemInAndEndAfterAndStartBeforeOrderByStartDesc(Collection<Item> item,
                                                                            LocalDateTime end, LocalDateTime start);
 
     Page<Booking> findAllByItemInAndEndAfterAndStartBefore(Collection<Item> item, LocalDateTime end,
                                                            LocalDateTime start, Pageable pageable);
 
-    // Бронирования вещей пользователя PAST
+    // Booking all the user's items PAST
     List<Booking> findAllByItemInAndStatusAndEndBeforeOrderByStartDesc(Collection<Item> item, BookingStatus status,
                                                                        LocalDateTime date);
 
     Page<Booking> findAllByItemInAndStatusAndEndBefore(Collection<Item> item, BookingStatus status,
                                                        LocalDateTime date, Pageable pageable);
 
-    // Бронирования вещей пользователя FUTURE
+    // Booking all the user's items FUTURE
     List<Booking> findAllByItemInAndStartAfterOrderByStartDesc(Collection<Item> item, LocalDateTime date);
 
     Page<Booking> findAllByItemInAndStartAfter(Collection<Item> item, LocalDateTime date, Pageable pageable);
 
-    // Бронирования вещей пользователя WAITING и REJECTED
+    // Booking all the user's items WAITING и REJECTED
     List<Booking> findAllByItemInAndStatusOrderByStartDesc(Collection<Item> item, BookingStatus status);
 
     Page<Booking> findAllByItemInAndStatus(Collection<Item> item, BookingStatus status, Pageable pageable);

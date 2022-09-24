@@ -41,9 +41,9 @@ public class Booking {
     private Item item;
     @OneToOne
     @JoinColumn(name = "booker_id", referencedColumnName = "id")
-    private User booker;    // пользователь, который осуществляет бронирование
+    private User booker;    // The user who created the booking
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private BookingStatus status;   /* - статус бронирования (ожидает одобрения, подтверждено владельцем,
-                                     отклонено владельцем или отменено создателем) */
+    private BookingStatus status;   /* - booking status (WAITING approval, APPROVED by the owner,
+                                        REJECTED by the owner, CANCELED by the creator) */
 }

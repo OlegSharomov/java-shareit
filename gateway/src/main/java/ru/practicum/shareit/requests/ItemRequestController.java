@@ -54,9 +54,9 @@ public class ItemRequestController {
     public ResponseEntity<Object>
     getAllItemRequestsByParams(@RequestHeader("X-Sharer-User-Id") Long userId,
                                @PositiveOrZero(message = "'from' must be positive or zero")
-                               @RequestParam(name = "from", required = false) Integer from,
-                               @Positive(message = "Значение size должно быть позитивным")
-                               @RequestParam(name = "size", required = false) Integer size) {
+                               @RequestParam(name = "from", defaultValue = "0") Integer from,
+                               @Positive(message = "'size' must be positive")
+                               @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Received a request: GET/requests/all?from={}&size={} from user id = {}", from, size, userId);
         return itemRequestService.getAllItemRequestsByParams(userId, from, size);
     }

@@ -15,11 +15,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class ItemDto {
     private Long id;
-//    @NotBlank(message = "Название вещи не должно быть пустым")
     private String name;
-//    @NotNull(message = "Отсутствует описание вещи")
     private String description;
-//    @NotNull(message = "Отсутствует статус доступности вещи для аренды")
     private Boolean available;
     private User owner;
     private Long requestId;

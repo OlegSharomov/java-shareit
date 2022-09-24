@@ -83,10 +83,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional
     public ItemRequestDtoAnswerFull getItemRequestById(Long userId, Long itemRequestId) {
         if (!userService.isUserExists(userId)) {
-            throw new NotFoundException(String.format("Пользователь с переданным id = %d не найден", userId));
+            throw new NotFoundException(String.format("User with id = %d not found", userId));
         }
         ItemRequest request = itemRequestsRepository.findById(itemRequestId)
-                .orElseThrow(() -> new NotFoundException(String.format("Запрос с id = %d не найден", itemRequestId)));
+                .orElseThrow(() -> new NotFoundException(String.format("Request with id = %d not found", itemRequestId)));
         List<ItemDtoAnswer> items = itemRepository.findAllByRequest(request).stream()
                 .map(e -> itemMapper.toItemDtoAnswer(e, e.getRequest()))
                 .collect(Collectors.toList());
