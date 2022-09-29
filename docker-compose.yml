@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-    - server
+      - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
 
@@ -16,11 +16,13 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-    - db
+      - db
     environment:
+      - SPRING_DATASOURCE_DRIVERCLASSNAME=org.postgresql.Driver
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
+      - SPRING_DATASOURCE_DRIVERCLASSNAME=org.h2.Driver
       - SPRING_DATASOURCE_URL=jdbc:h2:mem:shareit
       - SPRING_DATASOURCE_USERNAME=test
       - SPRING_DATASOURCE_PASSWORD=test
