@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.item.dto.ItemDtoAnswer;
 import ru.practicum.shareit.requests.dto.ItemRequestDto;
 import ru.practicum.shareit.requests.dto.ItemRequestDtoAnswer;
@@ -20,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -71,23 +69,6 @@ public class ItemRequestControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
         Mockito.verify(itemRequestService, Mockito.times(1)).createItemRequest(eq(itemRequestDto),
-                eq(1L), any(LocalDateTime.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenDescriptionIsBlank() throws Exception {
-        ItemRequestDto itemRequestDto = ItemRequestDto.builder().description(" ").build();
-        mockMvc.perform(post("/requests")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(itemRequestDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getMessage()
-                        .contains("Поле с описанием запроса должно быть заполнено")));
-        Mockito.verify(itemRequestService, Mockito.times(0)).createItemRequest(any(ItemRequestDto.class),
                 eq(1L), any(LocalDateTime.class));
     }
 
@@ -170,44 +151,6 @@ public class ItemRequestControllerTest {
                 .getAllItemRequestsByParams(any(Long.class), eq(null), eq(null));
     }
 
-    @Test
-    public void shouldThrowExceptionWhenFromIsNegative() throws Exception {
-        mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", "1")
-                        .param("from", Integer.toString(-5))
-                        .param("size", "5")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException()
-                        instanceof javax.validation.ConstraintViolationException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getMessage()
-                        .contains("Значение from должно быть позитивным или 0")));
-        Mockito.verify(itemRequestService, Mockito.times(0))
-                .getAllItemRequestsByParams(any(Long.class), any(Integer.class), any(Integer.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenSizeIsNegative() throws Exception {
-        mockMvc.perform(get("/requests/all")
-                        .header("X-Sharer-User-Id", "1")
-                        .param("from", "5")
-                        .param("size", Integer.toString(-5))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException()
-                        instanceof javax.validation.ConstraintViolationException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getMessage()
-                        .contains("Значение size должно быть позитивным")));
-        Mockito.verify(itemRequestService, Mockito.times(0))
-                .getAllItemRequestsByParams(any(Long.class), any(Integer.class), any(Integer.class));
-    }
-
     // getItemRequestById
     @Test
     public void shouldReturnItemRequestDtoAnswerFullById() throws Exception {
@@ -227,5 +170,4 @@ public class ItemRequestControllerTest {
         Mockito.verify(itemRequestService, Mockito.times(1))
                 .getItemRequestById(any(Long.class), any(Long.class));
     }
-
 }

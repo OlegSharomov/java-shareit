@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -69,42 +68,6 @@ class ShareItTests {
     }
 
     @Test
-    @Order(3)
-    public void shouldNotCreateUserWithoutEmail() throws Exception {
-        UserDto user = UserDto.builder()
-                .name("Andre")
-                .build();
-        mockMvc.perform(post("/users").content(mapper.writeValueAsString(user))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Order(4)
-    public void shouldNotCreateUserWithFailEmail() throws Exception {
-        UserDto user = UserDto.builder()
-                .name("Andre")
-                .build();
-        mockMvc.perform(post("/users").content(mapper.writeValueAsString(user))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Order(5)
-    public void shouldNotCreateUserWithoutName() throws Exception {
-        UserDto user = UserDto.builder()
-                .email("Vasiliy")
-                .build();
-        mockMvc.perform(post("/users").content(mapper.writeValueAsString(user))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     @Order(6)
     public void shouldCreateUserWithoutId() throws Exception {
         mockMvc.perform(post("/users").content(getJacksonUserWithoutId())
@@ -142,19 +105,6 @@ class ShareItTests {
     }
 
     @Test
-    @Order(9)
-    public void shouldNotUpdateUserWithWrongId() throws Exception {
-        mockMvc.perform(patch("/users/{userId}", 1).content("{\"id\":2}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-        mockMvc.perform(get("/users/{userId}", 1).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.name").value("NicolayUpdate"))
-                .andExpect(jsonPath("$.email").value("NicolayUpdate@mail.com"));
-    }
-
-    @Test
     @Order(10)
     public void shouldChangeName() throws Exception {
         mockMvc.perform(patch("/users/{userId}", 1).content("{\"name\":\"NiCola\"}")
@@ -186,33 +136,6 @@ class ShareItTests {
     }
 
     @Test
-    @Order(13)
-    public void shouldNotChangeEmptyName() throws Exception {
-        mockMvc.perform(patch("/users/{userId}", 1).content("{\"name\":\" \"}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Order(14)
-    public void shouldNotChangeEmptyEmail() throws Exception {
-        mockMvc.perform(patch("/users/{userId}", 1).content("{\"email\":\" \"}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Order(15)
-    public void shouldNotRemoveNonexistentUser() throws Exception {
-        mockMvc.perform(delete("/users/{userId}", 9999))
-                .andExpect(status().isNotFound());
-    }
-
-    //    Новые изменения
-    //
-    @Test
     @Order(16)
     public void shouldNotCreateUserWithDuplicateEmail() throws Exception {
         mockMvc.perform(post("/users").content(getJacksonUserWithoutId())
@@ -238,33 +161,6 @@ class ShareItTests {
         mockMvc.perform(post("/items").content(mapper.writeValueAsString(item2))
                         .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "99"))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @Order(19)
-    public void shouldNotCreateItemWithEmptyName() throws Exception {
-        ItemDto itemDto = ItemDto.builder().name(" ").description("Описание").available(true).build();
-        mockMvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Order(20)
-    public void shouldNotCreateItemWithoutDescription() throws Exception {
-        ItemDto itemDto = ItemDto.builder().name("Имя").available(true).build();
-        mockMvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @Order(21)
-    public void shouldNotCreateItemWithoutAvailable() throws Exception {
-        ItemDto itemDto = ItemDto.builder().name("Строительный фен").description("950 С").build();
-        mockMvc.perform(post("/items").content(mapper.writeValueAsString(itemDto))
-                        .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
-                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -326,28 +222,6 @@ class ShareItTests {
                 .andExpect(jsonPath("$.name").value("Шуруповерт с битами"))
                 .andExpect(jsonPath("$.description").value("Аккумуляторный 18V"))
                 .andExpect(jsonPath("$.available").value(false));
-    }
-
-    @Test
-    @Order(27)
-    public void shouldNotUpdateItem1WithWrongId() throws Exception {
-        mockMvc.perform(patch("/items/{itemId}", 1).content("{\"id\":99}")
-                        .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
-                .andExpect(status().isBadRequest());
-        mockMvc.perform(get("/items/{itemId}", 1).header("X-Sharer-User-Id", "1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value("1"))
-                .andExpect(jsonPath("$.name").value("Шуруповерт с битами"))
-                .andExpect(jsonPath("$.description").value("Аккумуляторный 18V"))
-                .andExpect(jsonPath("$.available").value(false));
-    }
-
-    @Test
-    @Order(28)
-    public void shouldNotUpdateItem1WithWrongName() throws Exception {
-        mockMvc.perform(patch("/items/{itemId}", 1).content("{\"name\":\" \"}")
-                        .contentType(MediaType.APPLICATION_JSON).header("X-Sharer-User-Id", "1"))
-                .andExpect(status().isBadRequest());
     }
 
     @Test

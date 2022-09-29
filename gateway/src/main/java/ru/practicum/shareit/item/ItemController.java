@@ -42,8 +42,7 @@ public class ItemController {
     @GetMapping
     public ResponseEntity<Object> getAllItemsOfUser(@NotNull(message = "The X-Sharer-User-Id is missing")
                                                     @Positive(message = "id must be positive")
-                                                    @RequestHeader("X-Sharer-User-Id") Long userId
-    ) {
+                                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получен запрос GET/items от пользователя id = {}", userId);
         return itemClient.getAllItemsOfUser(userId);
     }

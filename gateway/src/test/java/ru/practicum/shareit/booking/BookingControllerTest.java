@@ -178,7 +178,7 @@ public class BookingControllerTest {
 
     // getBookings
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenAllRequestParametersPresent() throws Exception {
+    public void shouldCallGetBookingsWhenAllRequestParametersPresent() throws Exception {
         when(bookingClient.getBookings(1L, ALL, 0, 5)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -193,7 +193,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenRequestParametersNotExists() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParametersNotExists() throws Exception {
         when(bookingClient.getBookings(1L, ALL, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -205,7 +205,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenRequestParameterIsCurrent() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParameterIsCurrent() throws Exception {
         when(bookingClient.getBookings(1L, CURRENT, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -218,7 +218,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenRequestParameterIsPast() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParameterIsPast() throws Exception {
         when(bookingClient.getBookings(1L, PAST, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -231,7 +231,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenRequestParameterIsFuture() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParameterIsFuture() throws Exception {
         when(bookingClient.getBookings(1L, FUTURE, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -244,7 +244,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenRequestParameterIsWaiting() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParameterIsWaiting() throws Exception {
         when(bookingClient.getBookings(1L, WAITING, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -257,7 +257,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullWhenWhenRequestParameterIsRejected() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParameterIsRejected() throws Exception {
         when(bookingClient.getBookings(1L, REJECTED, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
@@ -270,7 +270,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenWhenRequestParameterIsUNKNOWN_STATE() throws Exception {
+    public void shouldCallGetBookingsWhenRequestParameterIsUNKNOWN_STATE() throws Exception {
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", "1")
                         .param("state", "UNSUPPORTED_STATUS")
@@ -287,7 +287,7 @@ public class BookingControllerTest {
 
     // getAllBookingsOfItemsOwner
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenAllRequestParametersPresent() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenAllRequestParametersPresent() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, ALL, 0, 5)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")
@@ -302,7 +302,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenRequestParametersOnlyState() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenRequestParametersOnlyState() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, ALL, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")
@@ -315,7 +315,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenRequestParameterIsCurrent() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenRequestParameterIsCurrent() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, CURRENT, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")
@@ -328,7 +328,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenRequestParameterIsPast() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenRequestParameterIsPast() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, PAST, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")
@@ -341,7 +341,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenRequestParameterIsFuture() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenRequestParameterIsFuture() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, FUTURE, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")
@@ -354,7 +354,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenRequestParameterIsWaiting() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenRequestParameterIsWaiting() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, WAITING, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")
@@ -367,7 +367,7 @@ public class BookingControllerTest {
     }
 
     @Test
-    public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenRequestParameterIsRejected() throws Exception {
+    public void shouldCallGetAllBookingsOfItemsOwnerWhenWhenRequestParameterIsRejected() throws Exception {
         when(bookingClient.getAllBookingsOfItemsOwner(1L, REJECTED, null, null)).thenReturn(resp);
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", "1")

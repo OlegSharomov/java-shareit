@@ -7,9 +7,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDtoAnswer;
 import ru.practicum.shareit.item.dto.ItemMapperImpl;
@@ -32,7 +29,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -120,7 +116,7 @@ public class ItemRequestServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> itemRequestService.getItemRequestById(999L, 1L));
-        assertEquals("Пользователь с переданным id = 999 не найден", re.getMessage());
+        assertEquals("User with id = 999 not found", re.getMessage());
     }
 
     @Test
@@ -129,7 +125,7 @@ public class ItemRequestServiceTest {
         when(itemRequestsRepository.findById(999L)).thenReturn(Optional.empty());
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> itemRequestService.getItemRequestById(1L, 999L));
-        assertEquals("Запрос с id = 999 не найден", re.getMessage());
+        assertEquals("Request with id = 999 not found", re.getMessage());
     }
 
     @Test

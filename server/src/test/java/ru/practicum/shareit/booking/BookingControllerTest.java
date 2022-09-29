@@ -10,9 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswer;
 import ru.practicum.shareit.booking.dto.BookingDtoAnswerFull;
@@ -21,11 +19,9 @@ import ru.practicum.shareit.booking.service.SearchStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import javax.validation.ConstraintViolationException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -81,42 +77,6 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$.item").value(1L));
         Mockito.verify(bookingService, Mockito.times(1))
                 .createBooking(eq(1L), any(BookingDto.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenStartIsPast() throws Exception {
-        BookingDto bookingDtoPast = BookingDto.builder().id(1L).start(minuteOfToday.minusDays(1))
-                .end(minuteOfToday.plusDays(2)).build();
-        mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(bookingDtoPast))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getMessage()
-                        .contains("Дата начала бронирования указана в прошлом")));
-        Mockito.verify(bookingService, Mockito.times(0))
-                .createBooking(any(Long.class), any(BookingDto.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenEndIsPast() throws Exception {
-        BookingDto bookingDtoPast = BookingDto.builder().id(1L).start(minuteOfToday.plusDays(1))
-                .end(minuteOfToday.minusDays(2)).build();
-        mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(bookingDtoPast))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getMessage()
-                        .contains("Дата окончания бронирования указана в прошлом")));
-        Mockito.verify(bookingService, Mockito.times(0))
-                .createBooking(any(Long.class), any(BookingDto.class));
     }
 
     @Test
@@ -178,20 +138,6 @@ public class BookingControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenBookingIdNegative() throws Exception {
-        Mockito.when(bookingService.getBookingById(1L, 1L)).thenReturn(dtoAnswerFull1);
-        mockMvc.perform(get("/bookings/{bookingId}", "-1")
-                        .header("X-Sharer-User-Id", "1")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ConstraintViolationException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException()).getMessage()
-                        .contains("Переменная bookingId должна быть указана и быть больше 0")));
     }
 
     // getAllBookingsOfUser
@@ -380,20 +326,6 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[1].status").value(dtoAnswerFull2.getStatus().toString()));
     }
 
-    @Test
-    public void shouldThrowExceptionWhenWhenRequestParameterIsUNKNOWN_STATE() throws Exception {
-        mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", "1")
-                        .param("state", "UNSUPPORTED_STATUS")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentTypeMismatchException))
-                .andExpect(result -> assertTrue(result.getResponse().getContentAsString()
-                        .contains("Unknown state: UNSUPPORTED_STATUS")));
-    }
-
     // getAllBookingsOfItemsOwner
     @Test
     public void shouldReturnListBookingDtoAnswerFullOfOwnerWhenWhenAllRequestParametersPresent() throws Exception {
@@ -579,19 +511,4 @@ public class BookingControllerTest {
                 .andExpect(jsonPath("$[1].end").value(dtoAnswerFull2.getEnd().toString()))
                 .andExpect(jsonPath("$[1].status").value(dtoAnswerFull2.getStatus().toString()));
     }
-
-    @Test
-    public void shouldThrowExceptionWhenWhenInMethodgetAllBookingsOfItemsOwnerRequestParameterIsUNKNOWN_STATE() throws Exception {
-        mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", "1")
-                        .param("state", "UNSUPPORTED_STATUS")
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentTypeMismatchException))
-                .andExpect(result -> assertTrue(result.getResponse().getContentAsString()
-                        .contains("Unknown state: UNSUPPORTED_STATUS")));
-    }
-
 }

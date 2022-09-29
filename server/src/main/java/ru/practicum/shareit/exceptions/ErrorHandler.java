@@ -12,13 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDuplicateException(final DuplicateException e) {
-        logMakeNote(e);
-        return new ErrorResponse(String.format("Error: %s", e.getMessage()));
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleItemNotFoundException(final NotFoundException e) {
         logMakeNote(e);

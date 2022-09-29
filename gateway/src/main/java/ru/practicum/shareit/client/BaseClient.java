@@ -1,6 +1,5 @@
 package ru.practicum.shareit.client;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
-@Slf4j
+
 public class BaseClient {
     protected final RestTemplate rest;
 
@@ -86,10 +85,7 @@ public class BaseClient {
 
         ResponseEntity<Object> shareitServerResponse;
         try {
-            log.warn("Подготавливаем запрос: {}", requestEntity);
             if (parameters != null) {
-                log.warn("Отправляем запрос с параметрами: : Путь {},\n Метод {},\n сам запрос {},\n параметры {}",
-                        path, method, requestEntity, parameters);
                 shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
             } else {
                 shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class);

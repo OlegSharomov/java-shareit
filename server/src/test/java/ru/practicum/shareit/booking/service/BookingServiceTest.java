@@ -74,17 +74,7 @@ public class BookingServiceTest {
         when(bookingRepository.existsById(1L)).thenReturn(true);
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals("Данные бронирования можно изменять только через метод PATCH", re.getMessage());
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenWeTryCreateBookingAndStartOfBookingBeforeNow() {
-        BookingDto bookingDto1 = BookingDto.builder().itemId(1L).start(minuteOfToday.minusDays(1))
-                .end(minuteOfToday.minusDays(2)).build();
-        RuntimeException re = assertThrows(ValidationException.class,
-                () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals("Дата начала бронирования должна быть раньше даты окончания бронирования",
-                re.getMessage());
+        Assertions.assertEquals("Booking data can only be changed via the 'PATCH' method", re.getMessage());
     }
 
     @Test
@@ -94,7 +84,7 @@ public class BookingServiceTest {
         when(itemService.getEntityItemByIdFromStorage(1L)).thenReturn(item1);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.createBooking(3L, bookingDto1));
-        Assertions.assertEquals("Вещи не доступны для бронирования их владельцам", re.getMessage());
+        Assertions.assertEquals("Items are not available for booking to their owners", re.getMessage());
     }
 
     @Test
@@ -106,7 +96,7 @@ public class BookingServiceTest {
         when(itemService.getEntityItemByIdFromStorage(1L)).thenReturn(itemUnavailable);
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(1L, bookingDto1));
-        Assertions.assertEquals("Запрашиваемая вещь не доступна для бронирования", re.getMessage());
+        Assertions.assertEquals("The item is not available for booking", re.getMessage());
     }
 
     @Test
@@ -132,7 +122,7 @@ public class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.updateBookingStatus(1L, 1L, false));
-        assertEquals("Запрашиваемое бронирование с id = 1 не найдено", re.getMessage());
+        assertEquals("Booking with id = 1 not found", re.getMessage());
     }
 
     @Test
@@ -140,8 +130,8 @@ public class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking1));
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.updateBookingStatus(1L, 1L, false));
-        assertEquals("Пользователь с id = 1 не может редактировать статус " +
-                "бронирования для вещи id = 1, т.к. он не является ее владельцем", re.getMessage());
+        assertEquals("The user with id = 1 cannot edit the booking status for the item id = 1, " +
+                "because he is not its owner", re.getMessage());
     }
 
     @Test
@@ -151,7 +141,7 @@ public class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(bookingApproved));
         RuntimeException re = assertThrows(ValidationException.class,
                 () -> bookingService.updateBookingStatus(3L, 1L, false));
-        assertEquals("Статус бронирования уже подтвержден", re.getMessage());
+        assertEquals("The booking status has already been confirmed", re.getMessage());
     }
 
     @Test
@@ -186,7 +176,7 @@ public class BookingServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.getBookingById(999L, 1L));
-        assertEquals("Пользователь с id = 999 не найден", re.getMessage());
+        assertEquals("User with id = 999 not found", re.getMessage());
     }
 
     @Test
@@ -195,7 +185,7 @@ public class BookingServiceTest {
         when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.getBookingById(1L, 999L));
-        assertEquals("Запрашиваемое бронирование с id = 999 не найдено", re.getMessage());
+        assertEquals("Requested booking with id = 999 not found", re.getMessage());
     }
 
     @Test
@@ -204,8 +194,7 @@ public class BookingServiceTest {
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking1));
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.getBookingById(2L, 1L));
-        assertEquals("Пользователь с id = 2 не имеет доступа к проссмотру " +
-                "бронирования id = 1", re.getMessage());
+        assertEquals("The user with id = 2 does not have access to view the booking id = 1", re.getMessage());
     }
 
     @Test
@@ -234,7 +223,7 @@ public class BookingServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class, () -> bookingService
                 .getAllBookingsOfUser(999L, ALL, 0, 20));
-        assertEquals("Пользователь с id = 999 не найден", re.getMessage());
+        assertEquals("User with id = 999 not found", re.getMessage());
     }
 
     @Test
@@ -468,7 +457,7 @@ public class BookingServiceTest {
         when(userService.isUserExists(999L)).thenReturn(false);
         RuntimeException re = assertThrows(NotFoundException.class,
                 () -> bookingService.getAllBookingsOfItemsOwner(999L, ALL, null, null));
-        assertEquals("Пользователь с id = 999 не найден", re.getMessage());
+        assertEquals("User with id = 999 not found", re.getMessage());
     }
 
     @Test
@@ -768,5 +757,4 @@ public class BookingServiceTest {
                 .getAllBookingsOfItemsOwner(3L, SearchStatus.REJECTED, 0, 5);
         assertEquals(List.of(bookingDto1, bookingDto2), result);
     }
-
 }

@@ -45,7 +45,7 @@ public class ItemControllerTest {
 
     // getItemById
     @Test
-    public void shouldReturnItemDtoAnswerFullById() throws Exception {
+    public void shouldCallGetItemByIdAndReturnAnswer() throws Exception {
         Mockito.when(itemClient.getItemById(1L, 1L)).thenReturn(resp);
         mockMvc.perform(get("/items/{itemId}", "1")
                         .header("X-Sharer-User-Id", "1")
@@ -58,7 +58,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenIdNegative() throws Exception {
+    public void shouldThrowConstraintViolationExceptionWhenIdNegative() throws Exception {
         mockMvc.perform(get("/items/{itemId}", "-1")
                         .header("X-Sharer-User-Id", "1")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -74,7 +74,7 @@ public class ItemControllerTest {
 
     //     getAllItemsOfUser
     @Test
-    public void shouldReturnListOfItemDtoAnswerFull() throws Exception {
+    public void shouldCallGetAllItemsOfUserAndReturnAnswer() throws Exception {
         Mockito.when(itemClient.getAllItemsOfUser(1L)).thenReturn(resp);
         mockMvc.perform(get("/items")
                         .header("X-Sharer-User-Id", "1")
@@ -89,7 +89,7 @@ public class ItemControllerTest {
 
     // createItem
     @Test
-    public void shouldCreateItemAndReturnItemDtoAnswer() throws Exception {
+    public void shouldCallCreateItemAndReturnAnswer() throws Exception {
         Mockito.when(itemClient.createItem(1L, itemDto1)).thenReturn(resp);
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", "1")
@@ -158,7 +158,7 @@ public class ItemControllerTest {
 
     // updateItem
     @Test
-    public void shouldUpdateItemAndReturnItemDtoAnswer() throws Exception {
+    public void shouldUpdateItemAndReturnAnswer() throws Exception {
         ItemReqDto itemDto = ItemReqDto.builder().id(1L).name("item1")
                 .description("description of item1").available(true).build();
         Mockito.when(itemClient.updateItem(1L, 1L, itemDto)).thenReturn(resp);
@@ -174,7 +174,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void shouldUpdateItemWithOnlyNameAndCallItemServiceUpdateItem() throws Exception {
+    public void shouldCallUpdateItemWithOnlyName() throws Exception {
         ItemReqDto itemDto = ItemReqDto.builder().name("item1").build();
         Mockito.when(itemClient.updateItem(1L, 1L, itemDto)).thenReturn(resp);
         mockMvc.perform(patch("/items/{itemId}", "1")
@@ -189,7 +189,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void shouldUpdateItemWithOnlyDescriptionAndCallItemServiceUpdateItem() throws Exception {
+    public void shouldCallUpdateItemWithOnlyDescription() throws Exception {
         ItemReqDto itemDto = ItemReqDto.builder().description("description of item1").build();
         Mockito.when(itemClient.updateItem(1L, 1L, itemDto)).thenReturn(resp);
         mockMvc.perform(patch("/items/{itemId}", "1")
@@ -204,7 +204,7 @@ public class ItemControllerTest {
     }
 
     @Test
-    public void shouldUpdateItemWithOnlyAvailableAndCallItemServiceUpdateItem() throws Exception {
+    public void shouldCallUpdateItemWithOnlyAvailable() throws Exception {
         ItemReqDto itemDto = ItemReqDto.builder().available(false).build();
         Mockito.when(itemClient.updateItem(1L, 1L, itemDto)).thenReturn(resp);
         mockMvc.perform(patch("/items/{itemId}", "1")
@@ -220,7 +220,7 @@ public class ItemControllerTest {
 
     // searchForItemsByQueryText
     @Test
-    public void shouldReturnCollectionOfItemDtoAnswer() throws Exception {
+    public void shouldCallSearchForItemsByQueryText() throws Exception {
         Mockito.when(itemClient.searchForItemsByQueryText(eq(1L), any(String.class))).thenReturn(resp);
         String param = "item";
         mockMvc.perform(get("/items/search")
@@ -248,7 +248,7 @@ public class ItemControllerTest {
 
     // createComment
     @Test
-    public void shouldCallItemServiceCreateCommentAndReturnCommentDto() throws Exception {
+    public void shouldCallItemServiceCreateComment() throws Exception {
         CommentRequestDto commentDto = CommentRequestDto.builder().text("Отличная вещь").build();
         when(itemClient.createComment(eq(1L), eq(1L), any(CommentRequestDto.class))).thenReturn(resp);
         mockMvc.perform(post("/items/{itemId}/comment", "1")

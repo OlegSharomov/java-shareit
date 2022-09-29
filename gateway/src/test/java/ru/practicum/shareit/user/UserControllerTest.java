@@ -42,7 +42,7 @@ public class UserControllerTest {
 
     // getAllUsers
     @Test
-    public void shouldReturnListOfUserDtoAnswer() throws Exception {
+    public void shouldCallGetAllUsers() throws Exception {
         when(userClient.getAllUsers()).thenReturn(resp);
         mockMvc.perform(get("/users")
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -55,7 +55,7 @@ public class UserControllerTest {
 
     // getUserById
     @Test
-    public void shouldReturnUserDtoAnswer() throws Exception {
+    public void shouldCallGetUserById() throws Exception {
         when(userClient.getUserById(1L)).thenReturn(resp);
         mockMvc.perform(get("/users/{userId}", 1)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -68,7 +68,7 @@ public class UserControllerTest {
 
     // createUser
     @Test
-    public void shouldReturnUserDtoAfterCreated() throws Exception {
+    public void shouldCallCreateUser() throws Exception {
         when(userClient.createUser(any(UserRequestDto.class))).thenReturn(resp);
         mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto1))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -79,7 +79,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReturnStatus400WhenNameIsEmpty() throws Exception {
+    public void shouldThrowMethodArgumentNotValidExceptionWhenNameIsEmpty() throws Exception {
         UserRequestDto userDto = UserRequestDto.builder().name(" ").email("user1@mail.ru").build();
         mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -93,7 +93,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReturnStatus400WhenMailIsNull() throws Exception {
+    public void shoulThrowMethodArgumentNotValidExceptionWhenMailIsMissing() throws Exception {
         UserRequestDto userDto = UserRequestDto.builder().name("user1").build();
         mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -107,7 +107,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReturnStatus400WhenMailIsIncorrect() throws Exception {
+    public void shouldThrowMethodArgumentNotValidExceptionWhenMailNotCorrect() throws Exception {
         UserRequestDto userDto = UserRequestDto.builder().name("user1").email("fffffffff").build();
         mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -122,7 +122,7 @@ public class UserControllerTest {
 
     // updateUser
     @Test
-    public void shouldReturnUpdatedUserDtoAnswerWhenWeChangeAllFieldsOfUser() throws Exception {
+    public void shouldCallUpdateUser() throws Exception {
         when(userClient.updateUser(eq(1L), any(UserRequestDto.class))).thenReturn(resp);
         mockMvc.perform(patch("/users/{userId}", 1)
                         .content(objectMapper.writeValueAsString(userDto1))
@@ -134,7 +134,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReturnUpdatedUserDtoAnswerWhenWeChangeFieldName() throws Exception {
+    public void shouldCallUpdateUserOnlyWithName() throws Exception {
         UserRequestDto userDto = UserRequestDto.builder().name("userUpdate").build();
         mockMvc.perform(patch("/users/{userId}", 1)
                         .content(objectMapper.writeValueAsString(userDto))
@@ -146,7 +146,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldReturnUpdatedUserDtoAnswerWhenWeChangeFieldEmail() throws Exception {
+    public void shouldCallUpdateUserOnlyWithEmail() throws Exception {
         UserRequestDto userDto = UserRequestDto.builder().email("userUpdate@mail.ru").build();
         mockMvc.perform(patch("/users/{userId}", 1)
                         .content(objectMapper.writeValueAsString(userDto))
@@ -202,8 +202,9 @@ public class UserControllerTest {
         Mockito.verify(userClient, Mockito.times(0)).createUser(any(UserRequestDto.class));
     }
 
+    // deleteUserById
     @Test
-    public void should() throws Exception {
+    public void shouldCallDeleteUser() throws Exception {
         mockMvc.perform(delete("/users/{userId}", 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))

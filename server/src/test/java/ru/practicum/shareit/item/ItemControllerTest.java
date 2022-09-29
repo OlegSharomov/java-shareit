@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import ru.practicum.shareit.item.comment.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -19,7 +18,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -70,25 +68,25 @@ public class ItemControllerTest {
     }
 
     // getAllItemsOfUser
-//    @Test
-//    public void shouldReturnListOfItemDtoAnswerFull() throws Exception {
-//        Mockito.when(itemService.getAllItemsOfUser(1L)).thenReturn(List.of(itemDtoAnswerFull1, itemDtoAnswerFull2));
-//        mockMvc.perform(get("/items")
-//                        .header("X-Sharer-User-Id", "1")
-//                        .characterEncoding(StandardCharsets.UTF_8)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .accept(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[0].id", is(itemDtoAnswerFull1.getId()), Long.class))
-//                .andExpect(jsonPath("$[0].name", is(itemDtoAnswerFull1.getName()), String.class))
-//                .andExpect(jsonPath("$[0].description", is(itemDtoAnswerFull1.getDescription()), String.class))
-//                .andExpect(jsonPath("$[0].available", is(itemDtoAnswerFull1.getAvailable()), Boolean.class))
-//                .andExpect(jsonPath("$[1].id", is(itemDtoAnswerFull2.getId()), Long.class))
-//                .andExpect(jsonPath("$[1].name", is(itemDtoAnswerFull2.getName()), String.class))
-//                .andExpect(jsonPath("$[1].description", is(itemDtoAnswerFull2.getDescription()), String.class))
-//                .andExpect(jsonPath("$[1].available", is(itemDtoAnswerFull2.getAvailable()), Boolean.class));
-//    }
+    @Test
+    public void shouldReturnListOfItemDtoAnswerFull() throws Exception {
+        Mockito.when(itemService.getAllItemsOfUser(1L)).thenReturn(List.of(itemDtoAnswerFull1, itemDtoAnswerFull2));
+        mockMvc.perform(get("/items")
+                        .header("X-Sharer-User-Id", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(itemDtoAnswerFull1.getId()), Long.class))
+                .andExpect(jsonPath("$[0].name", is(itemDtoAnswerFull1.getName()), String.class))
+                .andExpect(jsonPath("$[0].description", is(itemDtoAnswerFull1.getDescription()), String.class))
+                .andExpect(jsonPath("$[0].available", is(itemDtoAnswerFull1.getAvailable()), Boolean.class))
+                .andExpect(jsonPath("$[1].id", is(itemDtoAnswerFull2.getId()), Long.class))
+                .andExpect(jsonPath("$[1].name", is(itemDtoAnswerFull2.getName()), String.class))
+                .andExpect(jsonPath("$[1].description", is(itemDtoAnswerFull2.getDescription()), String.class))
+                .andExpect(jsonPath("$[1].available", is(itemDtoAnswerFull2.getAvailable()), Boolean.class));
+    }
 
     // createItem
     @Test
@@ -107,60 +105,6 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.description", is(itemDtoAnswer1.getDescription()), String.class))
                 .andExpect(jsonPath("$.available", is(itemDtoAnswer1.getAvailable()), Boolean.class));
         verify(itemService, Mockito.times(1)).createItem(eq(1L), any(ItemDto.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenNameIsEmpty() throws Exception {
-        ItemDto itemDto = ItemDto.builder().id(1L).name(" ")
-                .description("description of item1").available(true).build();
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Название вещи не должно быть пустым")));
-        verify(itemService, Mockito.times(0)).createItem(any(Long.class), any(ItemDto.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenDescriptionIsNull() throws Exception {
-        ItemDto itemDto = ItemDto.builder().id(1L).name("item1")
-                .description(null).available(true).build();
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Отсутствует описание вещи")));
-        verify(itemService, Mockito.times(0)).createItem(any(Long.class), any(ItemDto.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenAvailableIsNull() throws Exception {
-        ItemDto itemDto = ItemDto.builder().id(1L).name("item1")
-                .description("description of item1").available(null).build();
-        mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Отсутствует статус доступности вещи для аренды")));
-        verify(itemService, Mockito.times(0)).createItem(any(Long.class), any(ItemDto.class));
     }
 
     // updateItem
@@ -280,23 +224,6 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.text").value("Отличная вещь"))
                 .andExpect(jsonPath("$.authorName").value("user1"));
         Mockito.verify(itemService, Mockito.times(1)).createComment(eq(1L), eq(1L),
-                any(CommentDto.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionWhenTextIsBlank() throws Exception {
-        CommentDto commentDto = CommentDto.builder().text(" ").build();
-        mockMvc.perform(post("/items/{itemId}/comment", "1")
-                        .header("X-Sharer-User-Id", "1")
-                        .content(objectMapper.writeValueAsString(commentDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Поле text не должно быть пустым")));
-        Mockito.verify(itemService, Mockito.times(0)).createComment(any(Long.class), any(Long.class),
                 any(CommentDto.class));
     }
 }

@@ -123,7 +123,7 @@ class ItemServiceImpl implements ItemService {
         ItemRequest itemRequest = null;
         if (itemDto.getRequestId() != null) {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> new NotFoundException(
-                    String.format("Passed id = %d of the item request not found", itemDto.getRequestId())));
+                    String.format("Passed id = %d of the item not found", itemDto.getRequestId())));
         }
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(String
                 .format("Item with id = %d not found", itemId)));

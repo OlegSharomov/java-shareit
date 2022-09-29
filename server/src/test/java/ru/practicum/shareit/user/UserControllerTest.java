@@ -8,17 +8,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoAnswer;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -29,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
     @Autowired
@@ -90,49 +86,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.email", is(userDtoAnswer1.getEmail()), String.class));
         Mockito.verify(userService, Mockito.times(1)).createUser(any(UserDto.class));
     }
-
-    @Test
-    public void shouldReturnStatus400WhenNameIsEmpty() throws Exception {
-        UserDto userDto = UserDto.builder().name(" ").email("user1@mail.ru").build();
-        mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Имя пользователя отсутствует")));
-        Mockito.verify(userService, Mockito.times(0)).createUser(any(UserDto.class));
-    }
-
-    @Test
-    public void shouldReturnStatus400WhenMailIsNull() throws Exception {
-        UserDto userDto = UserDto.builder().name("user1").build();
-        mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Email пользователя отсутствует")));
-        Mockito.verify(userService, Mockito.times(0)).createUser(any(UserDto.class));
-    }
-
-    @Test
-    public void shouldReturnStatus400WhenMailIsIncorrect() throws Exception {
-        UserDto userDto = UserDto.builder().name("user1").email("fffffffff").build();
-        mockMvc.perform(post("/users").content(objectMapper.writeValueAsString(userDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException))
-                .andExpect(result -> assertTrue(Objects.requireNonNull(result.getResolvedException())
-                        .getMessage().contains("Email не проходит проверку")));
-        Mockito.verify(userService, Mockito.times(0)).createUser(any(UserDto.class));
-    }
-
 
     // updateUser
     @Test

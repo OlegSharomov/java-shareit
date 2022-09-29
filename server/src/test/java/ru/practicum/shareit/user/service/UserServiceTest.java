@@ -132,36 +132,12 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateUserIdWhenWeTryToChangeId() {
-        UserDto userDto = UserDto.builder().id(2L).name("user1Update").email("user1Update@mail.ru").build();
-        RuntimeException re = Assertions.assertThrows(ValidationException.class,
-                () -> userService.updateUser(1L, userDto));
-        assertEquals("Нельзя изменять id пользователя", re.getMessage());
-    }
-
-    @Test
-    public void shouldNotUpdateUserNameWhenWeTryToChangeEmptyName() {
-        UserDto userDto = UserDto.builder().id(1L).name(" ").email("user1Update@mail.ru").build();
-        RuntimeException re = Assertions.assertThrows(ValidationException.class,
-                () -> userService.updateUser(1L, userDto));
-        assertEquals("Поле name должно быть заполнено", re.getMessage());
-    }
-
-    @Test
-    public void shouldNotUpdateUserEmailWhenWeTryToChangeEmptyEmail() {
-        UserDto userDto = UserDto.builder().id(1L).name("user1Update").email(" ").build();
-        RuntimeException re = Assertions.assertThrows(ValidationException.class,
-                () -> userService.updateUser(1L, userDto));
-        assertEquals("Поле email должно быть заполнено", re.getMessage());
-    }
-
-    @Test
     public void shouldNotUpdateUserNameAndEmailWhenUserNotExists() {
         UserDto userDto = UserDto.builder().id(1L).name("user1Update").email("user1Update@mail.ru").build();
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
         RuntimeException re = Assertions.assertThrows(NotFoundException.class,
                 () -> userService.updateUser(1L, userDto));
-        assertEquals("Пользователь с переданным id не найден", re.getMessage());
+        assertEquals("User with id = 1 not found", re.getMessage());
     }
 
     // deleteUserById
