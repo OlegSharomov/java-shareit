@@ -81,11 +81,10 @@ class ItemServiceImpl implements ItemService {
     public List<ItemDtoAnswerFull> getAllItemsOfUser(Long userId) {
         checkExistenceUserInRepositoryById(userId);
         List<Item> items = getAllEntityItemsOfUserFromStorage(userId);
-        List<ItemDtoAnswerFull> result = items.stream()
+        return items.stream()
                 .map(x -> collectItemWithBookingsAndComments(x, userId))
                 .sorted(Comparator.comparingLong(ItemDtoAnswerFull::getId))
                 .collect(Collectors.toList());
-        return result;
     }
 
     @Override

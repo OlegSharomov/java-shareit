@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BookingDto {
-    Long id;
-    LocalDateTime start;
-    LocalDateTime end;
-    Long itemId;
-    User booker;    // The user who created the booking
-    BookingStatus status;
+    private Long id;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long itemId;
+    private User booker;    // The user who created the booking
+    private BookingStatus status;
 }

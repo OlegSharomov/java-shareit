@@ -18,6 +18,9 @@ import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemReqDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -42,64 +45,57 @@ public class ItemClientTest {
         this.mockServer.verify();
     }
 
-    @Test
-    public void shouldCallGetItemById() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/1"))
-                .andExpect(method(HttpMethod.GET))
+
+    private void expectMockServer(String addUrl, HttpMethod httpMethod) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/" + addUrl))
+                .andExpect(method(httpMethod))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
                 .andRespond(withStatus(HttpStatus.OK)
                 );
+    }
+
+    private void expectMockServerWithBody(String addUrl, HttpMethod httpMethod, ItemReqDto itemReqDto) throws JsonProcessingException {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(itemReqDto)))
+                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
+                .andRespond(withStatus(HttpStatus.OK)
+                );
+    }
+
+    @Test
+    public void shouldCallGetItemById() {
+        expectMockServer("1", GET);
         ResponseEntity<Object> result = itemClient.getItemById(1L, 1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallGetAllItemsOfUser() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
+        expectMockServer("", GET);
         ResponseEntity<Object> result = itemClient.getAllItemsOfUser(1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallCreateItem() throws JsonProcessingException {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/"))
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(item1)))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
+        expectMockServerWithBody("", POST, item1);
         ResponseEntity<Object> result = itemClient.createItem(1L, item1);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallUpdateItem() throws JsonProcessingException {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/1"))
-                .andExpect(method(HttpMethod.PATCH))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(item1)))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
+        expectMockServerWithBody("1", PATCH, item1);
         ResponseEntity<Object> result = itemClient.updateItem(1L, 1L, item1);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallSearchForItemsByQueryText() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/search?text=text"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
+        expectMockServer("search?text=text", GET);
         ResponseEntity<Object> result = itemClient.searchForItemsByQueryText(1L, "text");
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
@@ -107,12 +103,7 @@ public class ItemClientTest {
     @Test
     public void shouldCallCreateComment() {
         CommentRequestDto comment1 = CommentRequestDto.builder().text("Отличная вещь").build();
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/1/comment"))
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
+        expectMockServer("1/comment", POST);
         ResponseEntity<Object> result = itemClient.createComment(1L, 1L, comment1);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }

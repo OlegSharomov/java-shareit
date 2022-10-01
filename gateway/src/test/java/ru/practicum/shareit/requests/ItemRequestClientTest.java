@@ -40,6 +40,16 @@ public class ItemRequestClientTest {
         this.mockServer.verify();
     }
 
+    private void expectMockServer(String addUrl) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests" + addUrl))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+    }
+
     @Test
     public void shouldCallCreateItemRequest() throws JsonProcessingException {
         mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests"))
@@ -56,39 +66,21 @@ public class ItemRequestClientTest {
 
     @Test
     public void shouldCallGetAllItemRequestsOfUser() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServer("");
         ResponseEntity<Object> result = itemRequestClient.getAllItemRequestsOfUser(1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallGetAllItemRequestsByParams() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests/all?from=0&size=10"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServer("/all?from=0&size=10");
         ResponseEntity<Object> result = itemRequestClient.getAllItemRequestsByParams(1L, 0, 10);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallGetItemRequestById() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests/1"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServer("/1");
         ResponseEntity<Object> result = itemRequestClient.getItemRequestById(1L, 1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }

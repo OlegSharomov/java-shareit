@@ -17,6 +17,10 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -39,64 +43,56 @@ public class UserClientTest {
         this.mockServer.verify();
     }
 
-    @Test
-    public void shouldCallGetUsers() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users"))
-                .andExpect(method(HttpMethod.GET))
+    private void expectMockServer(String addUrl, HttpMethod httpMethod) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users" + addUrl))
+                .andExpect(method(httpMethod))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andRespond(withStatus(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                 );
+    }
+
+    private void expectMockServerWithBody(String addUrl, HttpMethod httpMethod, UserRequestDto userDto) throws JsonProcessingException {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(userDto)))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+    }
+
+    @Test
+    public void shouldCallGetUsers() {
+        expectMockServer("", GET);
         ResponseEntity<Object> result = userClient.getAllUsers();
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallGetUserById() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users/1"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServer("/1", GET);
         ResponseEntity<Object> result = userClient.getUserById(1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallCreateUser() throws JsonProcessingException {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users"))
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(user1)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServerWithBody("", POST, user1);
         ResponseEntity<Object> result = userClient.createUser(user1);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallUpdateUser() throws JsonProcessingException {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users/1"))
-                .andExpect(method(HttpMethod.PATCH))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(user1)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServerWithBody("/1", PATCH, user1);
         ResponseEntity<Object> result = userClient.updateUser(1L, user1);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallDeleteUserById() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users/1"))
-                .andExpect(method(HttpMethod.DELETE))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        expectMockServer("/1", DELETE);
         ResponseEntity<Object> result = userClient.deleteUserById(1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }

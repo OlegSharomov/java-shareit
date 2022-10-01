@@ -19,6 +19,8 @@ import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
@@ -44,18 +46,24 @@ public class BookingClientTest {
         this.mockServer.verify();
     }
 
-    @Test
-    public void shouldCallGetBookings() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings?state=ALL&from=0&size=10"))
-                .andExpect(method(HttpMethod.GET))
+    private void sendRequest(String addUrl, HttpMethod httpMethod) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings" + addUrl))
+                .andExpect(method(httpMethod))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
                 .andRespond(withStatus(HttpStatus.OK)
                         .contentType(MediaType.APPLICATION_JSON)
                 );
+    }
+
+    @Test
+    public void shouldCallGetBookings() {
+        String url = "?state=ALL&from=0&size=10";
+        sendRequest(url, GET);
         ResponseEntity<Object> result = bookingClient.getBookings(1L, ALL, 0, 10);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
+
 
     @Test
     public void shouldCallBookItem() throws JsonProcessingException {
@@ -73,39 +81,21 @@ public class BookingClientTest {
 
     @Test
     public void shouldCallChangeRequestStatus() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings/1?approved=false"))
-                .andExpect(method(HttpMethod.PATCH))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        sendRequest("/1?approved=false", PATCH);
         ResponseEntity<Object> result = bookingClient.updateBookingStatus(1L, 1L, false);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallGetBooking() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings/1"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        sendRequest("/1", GET);
         ResponseEntity<Object> result = bookingClient.getBooking(1L, 1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     @Test
     public void shouldCallGetAllBookingsOfItemsOwner() {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings/owner?state=ALL&from=0&size=10"))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
+        sendRequest("/owner?state=ALL&from=0&size=10", GET);
         ResponseEntity<Object> result = bookingClient.getAllBookingsOfItemsOwner(1L, ALL, 0, 10);
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
