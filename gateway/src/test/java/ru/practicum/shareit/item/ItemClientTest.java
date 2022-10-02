@@ -45,26 +45,6 @@ public class ItemClientTest {
         this.mockServer.verify();
     }
 
-
-    private void expectMockServer(String addUrl, HttpMethod httpMethod) {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/" + addUrl))
-                .andExpect(method(httpMethod))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
-    }
-
-    private void expectMockServerWithBody(String addUrl, HttpMethod httpMethod, ItemReqDto itemReqDto) throws JsonProcessingException {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/" + addUrl))
-                .andExpect(method(httpMethod))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(itemReqDto)))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                );
-    }
-
     @Test
     public void shouldCallGetItemById() {
         expectMockServer("1", GET);
@@ -108,4 +88,22 @@ public class ItemClientTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
+    private void expectMockServer(String addUrl, HttpMethod httpMethod) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
+                .andRespond(withStatus(HttpStatus.OK)
+                );
+    }
+
+    private void expectMockServerWithBody(String addUrl, HttpMethod httpMethod, ItemReqDto itemReqDto) throws JsonProcessingException {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/items/" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(itemReqDto)))
+                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
+                .andRespond(withStatus(HttpStatus.OK)
+                );
+    }
 }

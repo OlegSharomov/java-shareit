@@ -43,25 +43,6 @@ public class UserClientTest {
         this.mockServer.verify();
     }
 
-    private void expectMockServer(String addUrl, HttpMethod httpMethod) {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users" + addUrl))
-                .andExpect(method(httpMethod))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
-    }
-
-    private void expectMockServerWithBody(String addUrl, HttpMethod httpMethod, UserRequestDto userDto) throws JsonProcessingException {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users" + addUrl))
-                .andExpect(method(httpMethod))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json(mapper.writeValueAsString(userDto)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
-    }
-
     @Test
     public void shouldCallGetUsers() {
         expectMockServer("", GET);
@@ -95,5 +76,24 @@ public class UserClientTest {
         expectMockServer("/1", DELETE);
         ResponseEntity<Object> result = userClient.deleteUserById(1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    private void expectMockServer(String addUrl, HttpMethod httpMethod) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
+    }
+
+    private void expectMockServerWithBody(String addUrl, HttpMethod httpMethod, UserRequestDto userDto) throws JsonProcessingException {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/users" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(mapper.writeValueAsString(userDto)))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
     }
 }

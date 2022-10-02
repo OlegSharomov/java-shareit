@@ -40,16 +40,6 @@ public class ItemRequestClientTest {
         this.mockServer.verify();
     }
 
-    private void expectMockServer(String addUrl) {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests" + addUrl))
-                .andExpect(method(HttpMethod.GET))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
-    }
-
     @Test
     public void shouldCallCreateItemRequest() throws JsonProcessingException {
         mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests"))
@@ -83,5 +73,15 @@ public class ItemRequestClientTest {
         expectMockServer("/1");
         ResponseEntity<Object> result = itemRequestClient.getItemRequestById(1L, 1L);
         assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    private void expectMockServer(String addUrl) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/requests" + addUrl))
+                .andExpect(method(HttpMethod.GET))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
     }
 }

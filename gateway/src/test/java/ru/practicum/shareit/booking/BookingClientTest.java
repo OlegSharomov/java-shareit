@@ -46,16 +46,6 @@ public class BookingClientTest {
         this.mockServer.verify();
     }
 
-    private void sendRequest(String addUrl, HttpMethod httpMethod) {
-        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings" + addUrl))
-                .andExpect(method(httpMethod))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                );
-    }
-
     @Test
     public void shouldCallGetBookings() {
         String url = "?state=ALL&from=0&size=10";
@@ -98,5 +88,15 @@ public class BookingClientTest {
         sendRequest("/owner?state=ALL&from=0&size=10", GET);
         ResponseEntity<Object> result = bookingClient.getAllBookingsOfItemsOwner(1L, ALL, 0, 10);
         assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    private void sendRequest(String addUrl, HttpMethod httpMethod) {
+        mockServer.expect(ExpectedCount.once(), requestTo("http://localhost:9090/bookings" + addUrl))
+                .andExpect(method(httpMethod))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(header("X-Sharer-User-Id", String.valueOf(1L)))
+                .andRespond(withStatus(HttpStatus.OK)
+                        .contentType(MediaType.APPLICATION_JSON)
+                );
     }
 }
