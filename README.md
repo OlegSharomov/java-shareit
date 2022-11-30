@@ -25,7 +25,8 @@ Template repository for Shareit project.
 
 ![shareitDB](https://github.com/OlegSharomov/java-shareit/blob/main/server/src/images/shareitDB.png)
 
-Стек:
+### *Стек:*
+
 Java 11, Spring Boot, Hibernate, PostgreSQL, Maven, Docker, Lombok, MapStruct, Junit, Mockito.
 
 
