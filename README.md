@@ -26,7 +26,20 @@ Template repository for Shareit project.
 ![shareitDB](https://github.com/OlegSharomov/java-shareit/blob/main/server/src/images/shareitDB.png)
 
 ### *Стек:*
+- Java 11
+- Spring Boot
+- Hibernate
+- PostgreSQL
+- Maven
+- Docker
+- Lombok
+- MapStruct
+- Junit
+- Mockito
 
-Java 11, Spring Boot, Hibernate, PostgreSQL, Maven, Docker, Lombok, MapStruct, Junit, Mockito.
-
+### *Запуск:*
+Для запуска проекта необходим установленный Maven и Docker на компьютере.
+Скачиваем проект, в командной строке переходим в корневую директорию и в ней запускаем команды:
+- mvn clean package
+- docker compose up
 
